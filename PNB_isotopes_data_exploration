@@ -1,0 +1,4 @@
+pnb_trip <- read.table("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/TsTrajets_PNB_filtre.txt",
+                       h = TRUE,
+                       sep = "\t")
+head(pnb_trip)
