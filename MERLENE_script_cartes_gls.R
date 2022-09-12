@@ -1,11 +1,11 @@
 library(maptools)
 library(maps)
-library(SDMTools)
+library(SDMTools) # obsolete
 library(adehabitatHS)
 library(sp)
   
 lon.min=10
-lon.max=130 #défini la fenetre de l'océan indien ou les petrels peuvent potentiellement s'alimenter
+lon.max=130 #dï¿½fini la fenetre de l'ocï¿½an indien ou les petrels peuvent potentiellement s'alimenter
 lat.min=-40
 lat.max=30
 lon.col=55.5
@@ -38,7 +38,7 @@ plot(ver90M, add=TRUE, lwd=1.5, border= "#bfd1ff", col="#bfd1ff")
 plot(ver50M, add=TRUE, lwd=1.5, border= "deepskyblue4", col="deepskyblue4")
 plot(te,add=T,col="grey94")
 points(lon.col,lat.col, pch=23, bg="yellow", cex=3)
-legend("topright", legend=c("Kernel90 durant la période internuptiale","Kernel50 durant la période internuptiale"),fill=c("#bfd1ff","deepskyblue4"), horiz=F, cex=1.5, bg='white',inset=0.02) 
+legend("topright", legend=c("Kernel90 durant la pï¿½riode internuptiale","Kernel50 durant la pï¿½riode internuptiale"),fill=c("#bfd1ff","deepskyblue4"), horiz=F, cex=1.5, bg='white',inset=0.02) 
 box(lwd=2)
 dev.off()
 
