@@ -39,17 +39,24 @@ pnb_sf_utm <- st_transform(pnb_sf_ll,
 #### Data visualisation ####
 # ------------------------ #
 # ---- Factor class
-pnb_sf_utm$ID <- as.factor(pnb_sf_utm$ID)
-mapview(pnb_sf_utm,
-        zcol = "ID",
-        burst = T)
-head(pnb_sf_utm)
-unique(pnb_sf_utm$ID)
-class(pnb_sf_utm$ID)
+pnb_sf_ll$ID <- as.factor(pnb_sf_utm$ID)
+mapview(pnb_sf_ll,
+        zcol = "ID")
+head(pnb_sf_ll)
+unique(pnb_sf_ll$ID)
+class(pnb_sf_ll$ID)
 
+#### Data filtre - migration uniquement ####
+pnb_mig <- pnb_sf_ll[pnb_sf_ll$TYPE == "MIG",]
+class(pnb_mig)
+
+#### Data filtre - oiseau avec dosage isotope uniquement ####
+pnb_mig <- pnb_mig[pnb_mig$ID != "PNB-C2143",]
+table(pnb_mig$ID)
+pnb_mig <- droplevels(pnb_mig) ### refaire mais avant la conversion enclasse sf/sp
 #### kernel 50 ####
 # --------------- #
-pnb_sp <- as(pnb_sf_utm, "Spatial")
+pnb_sp <- as(pnb_mig, "Spatial")
 # pnb_sp <- as(pnb_sf_ll, "Spatial")
 
 pnb_sp_list <- split(pnb_sp,
@@ -59,16 +66,16 @@ length(pnb_sp_list)
 
 ker50_list <- lapply(pnb_sp_list,
                      function(x) {
-                         KUD_href <- kernelUD(x,
-                                              h = 'href')
-                         KUDvol_href <- getvolumeUD(KUD_href)
-                         ver50_href <- getverticeshr(KUDvol_href, 50)
-                         ver50_href    
+                         KUD <- kernelUD(x,
+                                         h = 2,
+                                         grid = 500)
+                         KUDvol <- getvolumeUD(KUD)
+                         ver50 <- getverticeshr(KUDvol, 50)
+                         ver50    
                      })
 length(ker50_list)
 mapview(ker50_list)
-??adehabitatLT
-?st_centroid
+
 
 #### test for #1
 class(ker50_list[[1]])
