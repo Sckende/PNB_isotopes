@@ -1,4 +1,83 @@
+# obj - calcul des kernel 50 par individu
+    #   - extraire lat/long du centroide du K50
+    #   - extraire min & max des dates des points dans le K50
+    #   - moyenne + sd des SST sous le K50 dans la periode de temps minDate maxDate
+    #   - completer le tableau de synthese avec dosage isotopes avec les informations précédentes
+    
+# package
+library(sf)
+library(mapview)
+source('C:/Users/ccjuhasz/Desktop/SMAC/GITHUB/SMAC-ENTROPIE_tracking/PTEBAR-JUV/packages_list.r')
+
+#### Loading data ####
+# ------------------ #
+
 pnb_trip <- read.table("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/TsTrajets_PNB_filtre.txt",
                        h = TRUE,
                        sep = "\t")
-head(pnb_trip)
+head(pnb_trip$DATE)
+
+# ---- Date class
+pnb_trip$DATE <- as.POSIXct(pnb_trip$DATE,
+                         format = "%Y-%m-%d %H:%M") # Date format
+
+# ---- Sf class
+# Conversion in sf Spatial Object
+projLatLon <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+# UTM 43S corresponding to the center of the Indian ocean
+# UTM 43 => 32743 
+projUTM <- '+init=epsg:32743'
+
+# Non projected spatial object
+pnb_sf_ll <- st_as_sf(pnb_trip,
+                     coords = c('LON', 'LAT'),
+                     crs = projLatLon)
+# Projected spatial object
+pnb_sf_utm <- st_transform(pnb_sf_ll,
+                             crs = 32743)
+
+#### Data visualisation ####
+# ------------------------ #
+# ---- Factor class
+pnb_sf_utm$ID <- as.factor(pnb_sf_utm$ID)
+mapview(pnb_sf_utm,
+        zcol = "ID",
+        burst = T)
+head(pnb_sf_utm)
+unique(pnb_sf_utm$ID)
+class(pnb_sf_utm$ID)
+
+#### kernel 50 ####
+# --------------- #
+pnb_sp <- as(pnb_sf_utm, "Spatial")
+# pnb_sp <- as(pnb_sf_ll, "Spatial")
+
+pnb_sp_list <- split(pnb_sp,
+                     pnb_sp$ID)
+summary(pnb_sp_list)
+length(pnb_sp_list)
+
+ker50_list <- lapply(pnb_sp_list,
+                     function(x) {
+                         KUD_href <- kernelUD(x,
+                                              h = 'href')
+                         KUDvol_href <- getvolumeUD(KUD_href)
+                         ver50_href <- getverticeshr(KUDvol_href, 50)
+                         ver50_href    
+                     })
+length(ker50_list)
+mapview(ker50_list)
+??adehabitatLT
+?st_centroid
+
+#### test for #1
+class(ker50_list[[1]])
+ker <- ker50_list[[2]]
+ker_sf <- st_as_sf(ker)
+plot(ker_sf)
+centro <- st_centroid(ker_sf)
+
+plot(ker_sf[1])
+points(8007185,
+       -1655446)
+plot(centro[1], col = "black", pch = 19, add = T)
