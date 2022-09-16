@@ -4,9 +4,11 @@
     #   - moyenne + sd des SST sous le K50 dans la periode de temps minDate maxDate
     #   - completer le tableau de synthese avec dosage isotopes avec les informations précédentes
     
+rm(list = ls())
 # package
 library(sf)
 library(mapview)
+library(maps)
 source('C:/Users/ccjuhasz/Desktop/SMAC/GITHUB/SMAC-ENTROPIE_tracking/PTEBAR-JUV/packages_list.r')
 
 #### Loading data ####
@@ -21,61 +23,177 @@ head(pnb_trip$DATE)
 pnb_trip$DATE <- as.POSIXct(pnb_trip$DATE,
                          format = "%Y-%m-%d %H:%M") # Date format
 
-# ---- Sf class
+#### Data filtre - migration uniquement ####
+# ---------------------------------------- #
+pnb_mig <- pnb_trip[pnb_trip$TYPE == "MIG", ]
+dim(pnb_mig) # from 6481 rows to 3620
+
+#### Data filtre - oiseau avec dosage isotope uniquement ####
+# --------------------------------------------------------- #
+pnb_mig <- pnb_mig[pnb_mig$ID != "PNB-C2143",]
+table(pnb_mig$ID)
+
+#### Sf/sp class ####
+# ----------------- #
 # Conversion in sf Spatial Object
 projLatLon <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 # UTM 43S corresponding to the center of the Indian ocean
-# UTM 43 => 32743 
+# UTM 43 => 32743
 projUTM <- '+init=epsg:32743'
 
 # Non projected spatial object
-pnb_sf_ll <- st_as_sf(pnb_trip,
-                     coords = c('LON', 'LAT'),
-                     crs = projLatLon)
+pnb_sf <- st_as_sf(pnb_trip,
+                   coords = c("LON", "LAT"),
+                   crs = projLatLon)
+
+pnb_sp <- as(pnb_sf, "Spatial")
+
 # Projected spatial object
-pnb_sf_utm <- st_transform(pnb_sf_ll,
-                             crs = 32743)
+pnb_sf_utm <- st_transform(pnb_sf,
+                           crs = 32743)
+pnb_sp_utm <- as(pnb_sf_utm,
+                 "Spatial")
 
 #### Data visualisation ####
 # ------------------------ #
+
 # ---- Factor class
-pnb_sf_ll$ID <- as.factor(pnb_sf_utm$ID)
-mapview(pnb_sf_ll,
+pnb_sp_utm$ID <- as.factor(pnb_sp_utm$ID)
+mapview(pnb_sp_utm,
         zcol = "ID")
-head(pnb_sf_ll)
-unique(pnb_sf_ll$ID)
-class(pnb_sf_ll$ID)
 
-#### Data filtre - migration uniquement ####
-pnb_mig <- pnb_sf_ll[pnb_sf_ll$TYPE == "MIG",]
-class(pnb_mig)
+# ---- Creation d'un deuxieme ID pour voir tous les points d'un meme individu
+head(pnb_sp_utm)
+pnb_sp_utm$ID2 <- substr(pnb_sp_utm$ID,
+                         5,
+                         9)
 
-#### Data filtre - oiseau avec dosage isotope uniquement ####
-pnb_mig <- pnb_mig[pnb_mig$ID != "PNB-C2143",]
-table(pnb_mig$ID)
-pnb_mig <- droplevels(pnb_mig) ### refaire mais avant la conversion enclasse sf/sp
+pnb_list <- split(pnb_sp_utm,
+                  pnb_sp_utm$ID2)
+mapview(pnb_list)
+
+# ---- Creation d'une liste par ID
+pnb_list2 <- split(pnb_sp_utm,
+                  pnb_sp_utm$ID)
+mapview(pnb_list2)
+
 #### kernel 50 ####
 # --------------- #
-pnb_sp <- as(pnb_mig, "Spatial")
-# pnb_sp <- as(pnb_sf_ll, "Spatial")
 
-pnb_sp_list <- split(pnb_sp,
-                     pnb_sp$ID)
-summary(pnb_sp_list)
-length(pnb_sp_list)
+# ATTENTION - Calcul des kernels à partir des données en UTM #
+summary(pnb_list2)
+length(pnb_list2)
 
-ker50_list <- lapply(pnb_sp_list,
+ker50_list <- lapply(pnb_list2,
                      function(x) {
                          KUD <- kernelUD(x,
-                                         h = 2,
-                                         grid = 500)
+                                        #  h = 2,
+                                        h = "href",
+                                        #  grid = 500,
+                                         )
                          KUDvol <- getvolumeUD(KUD)
                          ver50 <- getverticeshr(KUDvol, 50)
-                         ver50    
+                         ver50
                      })
 length(ker50_list)
 mapview(ker50_list)
 
+#### map production ####
+
+# obtention des coordonnees
+st_coordinates(pnb_sf_utm)
+class(pnb_sf_utm)
+coord <- apply(st_coordinates(pnb_sf_utm),
+               2,
+               range)
+
+x_min <- coord[1, 1]
+x_max <- coord[2, 1]
+
+y_min <- coord[1, 2]
+y_max <- coord[2, 2]
+
+# Cadrage de la donnees - defini la fenetre de l'ocean indien ou les petrels peuvent potentiellement s'alimenter
+lon_min = 10
+lon_max = 130 
+lat_min = -40
+lat_max = 30
+
+# Localisation colonie
+lon_col = 55.5
+lat_col = -21.25
+
+# ----- #
+lapply(pnb_list2, function (x) {
+    
+    print(unique(x$ID))
+
+    png(paste("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/maps/kernels/PNB_isotope_ker_50_90_",
+              unique(x$ID),
+              ".png",
+              sep = ""),
+    res = 300,
+    width = 70,
+    height = 50,
+    pointsize = 12,
+    unit = "cm",
+    bg = "transparent")
+    
+    
+    KUD <- kernelUD(x,
+                #    h = 2,
+                h = "href",
+                grid = 500)
+    KUDvol <- getvolumeUD(KUD)
+    ver50 <- getverticeshr(KUDvol, 50) # calcul en UTM
+    ver50sf <- st_as_sf(ver50) 
+    ver50spLL <- st_transform(ver50sf, crs = 4326) # retour en lat lon pour les cartes
+    
+    ver90 <- getverticeshr(KUDvol, 90)
+    ver90sf <- st_as_sf(ver90) 
+    ver90spLL <- st_transform(ver90sf, crs = 4326)
+    
+    # x11()    
+    plot(lon_col,
+         lat_col,
+         pch = 16,
+         col = "darkred",
+         cex.lab = 2,
+         font.lab = 2,
+         main = unique(x$ID),
+         xlab = "Longitude",
+         ylab = "Latitude",
+         cex.axis = 1.5,
+         xlim = c(lon_min, lon_max),
+         ylim = c(lat_min, lat_max))
+  
+  plot(ver90spLL,
+       add = TRUE,
+       lwd = 1.5,
+       border = "#bfd1ff",
+       col = "#bfd1ff")
+  
+  plot(ver50spLL,
+       add = TRUE,
+       lwd = 1.5,
+       border = "#004FFF",
+       col = "#004FFF")
+  plot(st_transform(st_as_sf(x), crs = 4326),
+       add = TRUE,
+       col = "darkgrey",
+       pch = 3,
+       cex = 2,
+       lwd = 2)
+  
+  map('world',
+      add = T,
+      fill = T,
+      col = gray(0.86),
+      border = gray(0.5))
+  
+  
+  dev.off()
+})
 
 #### test for #1
 class(ker50_list[[1]])
@@ -88,3 +206,8 @@ plot(ker_sf[1])
 points(8007185,
        -1655446)
 plot(centro[1], col = "black", pch = 19, add = T)
+x <- pnb_list2[[2]]
+x
+head(x)
+
+summary(pnb_list3)
