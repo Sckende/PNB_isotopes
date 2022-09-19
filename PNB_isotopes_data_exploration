@@ -14,7 +14,7 @@ source('C:/Users/ccjuhasz/Desktop/SMAC/GITHUB/SMAC-ENTROPIE_tracking/PTEBAR-JUV/
 #### Loading data ####
 # ------------------ #
 
-pnb_trip <- read.table("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/TsTrajets_PNB_filtre.txt",
+pnb_trip <- read.table("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_TsTrajets_filtre_Audrey_data.txt",
                        h = TRUE,
                        sep = "\t")
 head(pnb_trip$DATE)
@@ -25,6 +25,77 @@ pnb_trip$DATE <- as.POSIXct(pnb_trip$DATE,
 
 #### Data filtre - migration uniquement ####
 # ---------------------------------------- #
+# Localisation colonie
+lon_col = 55.5
+lat_col = -21.25
+
+plot(pnb_trip$LON[pnb_trip$TYPE == "REPRO"],
+     pnb_trip$LAT[pnb_trip$TYPE == "REPRO"],
+     pch = 16,
+     col = "#000000a7",
+     xlim = c(min(pnb_trip$LON), max(pnb_trip$LON)),
+     ylim = c(min(pnb_trip$LAT), max(pnb_trip$LAT)))
+points(pnb_trip$LON[pnb_trip$TYPE == "MIG"],
+     pnb_trip$LAT[pnb_trip$TYPE == "MIG"],
+     pch = 16,
+     col = "#a9a9a976")
+
+ll1 <- split(pnb_trip, pnb_trip$ID)
+lapply(ll1, function(x) {
+    
+    # Localisation visualisation mig vs repro
+    png(paste("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/maps/repro_vs_mig/PNB_isotope_zone_activite",
+              unique(x$ID),
+              ".png",
+              sep = ""),
+    res = 300,
+    width = 20,
+    height = 15,
+    pointsize = 12,
+    unit = "cm",
+    bg = "white")
+    
+    plot(x$LON[x$TYPE == "REPRO"],
+     x$LAT[x$TYPE == "REPRO"],
+     main = unique(x$ID),
+     xlab = "Longitude",
+     ylab = "Latitude",
+     pch = 16,
+     col = "#000000a7",
+     bty = "n",
+     xlim = c(min(x$LON), max(x$LON)),
+     ylim = c(min(x$LAT), max(x$LAT)))
+    
+    points(x$LON[x$TYPE == "MIG"],
+           x$LAT[x$TYPE == "MIG"],
+           pch = 16,
+           col = "#a9a9a976")
+    
+    points(x = 55.5,
+           y = -21.25,
+           pch = 15,
+           col = "darkorange")
+
+    legend("topleft",
+           legend = c("repro", "mig"),
+           fill = c("black", "darkgrey"),
+           bty = "n",
+           horiz = FALSE)
+    dev.off()
+    
+    # Min & max dates for each periods
+    
+    min_repro <- min(x$DATE[x$TYPE == "REPRO"])
+    max_repro <- max(x$DATE[x$TYPE == "REPRO"])
+    
+    min_mig <- min(x$DATE[x$TYPE == "MIG"])
+    max_mig <- max(x$DATE[x$TYPE == "MIG"])
+    
+    print(paste("Periode migration : ", min_mig, "-", max_mig))
+    print(paste("Periode reproduction : ", min_repro, "-", max_repro))
+    
+})
+
 pnb_mig <- pnb_trip[pnb_trip$TYPE == "MIG", ]
 dim(pnb_mig) # from 6481 rows to 3620
 
@@ -118,10 +189,6 @@ lon_min = 10
 lon_max = 130 
 lat_min = -40
 lat_max = 30
-
-# Localisation colonie
-lon_col = 55.5
-lat_col = -21.25
 
 # ----- #
 lapply(pnb_list2, function (x) {
