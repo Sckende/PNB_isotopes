@@ -9,7 +9,7 @@ rm(list = ls())
 library(sf)
 library(mapview)
 library(maps)
-source('C:/Users/ccjuhasz/Desktop/SMAC/GITHUB/SMAC-ENTROPIE_tracking/PTEBAR-JUV/packages_list.r')
+source("C:/Users/ccjuhasz/Desktop/SMAC/GITHUB/SMAC-ENTROPIE_tracking/PTEBAR-JUV/packages_list.r")
 
 #### Loading data ####
 # ------------------ #
@@ -22,6 +22,7 @@ head(pnb_trip$DATE)
 # ---- Date class
 pnb_trip$DATE <- as.POSIXct(pnb_trip$DATE,
                          format = "%Y-%m-%d %H:%M") # Date format
+
 
 #### Data filtre - migration uniquement ####
 # ---------------------------------------- #
@@ -40,69 +41,77 @@ points(pnb_trip$LON[pnb_trip$TYPE == "MIG"],
      pch = 16,
      col = "#a9a9a976")
 
-ll1 <- split(pnb_trip, pnb_trip$ID)
-lapply(ll1, function(x) {
-    
-    # Localisation visualisation mig vs repro
-    png(paste("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/maps/repro_vs_mig/PNB_isotope_zone_activite",
-              unique(x$ID),
-              ".png",
-              sep = ""),
-    res = 300,
-    width = 20,
-    height = 15,
-    pointsize = 12,
-    unit = "cm",
-    bg = "white")
-    
-    plot(x$LON[x$TYPE == "REPRO"],
-     x$LAT[x$TYPE == "REPRO"],
-     main = unique(x$ID),
-     xlab = "Longitude",
-     ylab = "Latitude",
-     pch = 16,
-     col = "#000000a7",
-     bty = "n",
-     xlim = c(min(x$LON), max(x$LON)),
-     ylim = c(min(x$LAT), max(x$LAT)))
-    
-    points(x$LON[x$TYPE == "MIG"],
-           x$LAT[x$TYPE == "MIG"],
-           pch = 16,
-           col = "#a9a9a976")
-    
-    points(x = 55.5,
-           y = -21.25,
-           pch = 15,
-           col = "darkorange")
+map("world",
+    add = TRUE,
+    col = "#cecaca",
+    fill = TRUE)
 
-    legend("topleft",
-           legend = c("repro", "mig"),
-           fill = c("black", "darkgrey"),
-           bty = "n",
-           horiz = FALSE)
-    dev.off()
+ll1 <- split(pnb_trip, pnb_trip$ID)
+
+# lapply(ll1, function(x) {
     
-    # Min & max dates for each periods
+#     # Localisation visualisation mig vs repro
+#     png(paste("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/maps/repro_vs_mig/PNB_isotope_zone_activite",
+#               unique(x$ID),
+#               ".png",
+#               sep = ""),
+#     res = 300,
+#     width = 20,
+#     height = 15,
+#     pointsize = 12,
+#     unit = "cm",
+#     bg = "white")
     
-    min_repro <- min(x$DATE[x$TYPE == "REPRO"])
-    max_repro <- max(x$DATE[x$TYPE == "REPRO"])
+#     plot(x$LON[x$TYPE == "REPRO"],
+#      x$LAT[x$TYPE == "REPRO"],
+#      main = unique(x$ID),
+#      xlab = "Longitude",
+#      ylab = "Latitude",
+#      pch = 16,
+#      col = "#000000a7",
+#      bty = "n",
+#      xlim = c(min(x$LON), max(x$LON)),
+#      ylim = c(min(x$LAT), max(x$LAT)))
     
-    min_mig <- min(x$DATE[x$TYPE == "MIG"])
-    max_mig <- max(x$DATE[x$TYPE == "MIG"])
+#     points(x$LON[x$TYPE == "MIG"],
+#            x$LAT[x$TYPE == "MIG"],
+#            pch = 16,
+#            col = "#a9a9a976")
     
-    print(paste("Periode migration : ", min_mig, "-", max_mig))
-    print(paste("Periode reproduction : ", min_repro, "-", max_repro))
+#     points(x = 55.5,
+#            y = -21.25,
+#            pch = 15,
+#            col = "darkorange")
+
+#     legend("topleft",
+#            legend = c("repro", "mig"),
+#            fill = c("black", "darkgrey"),
+#            bty = "n",
+#            horiz = FALSE)
+#     dev.off()
     
-})
+#     # Min & max dates for each periods
+    
+#     min_repro <- min(x$DATE[x$TYPE == "REPRO"])
+#     max_repro <- max(x$DATE[x$TYPE == "REPRO"])
+    
+#     min_mig <- min(x$DATE[x$TYPE == "MIG"])
+#     max_mig <- max(x$DATE[x$TYPE == "MIG"])
+    
+#     print(paste("Periode migration : ", min_mig, "-", max_mig))
+#     print(paste("Periode reproduction : ", min_repro, "-", max_repro))
+    
+# })
 
 pnb_mig <- pnb_trip[pnb_trip$TYPE == "MIG", ]
 dim(pnb_mig) # from 6481 rows to 3620
+table(pnb_mig$TYPE)
 
 #### Data filtre - oiseau avec dosage isotope uniquement ####
 # --------------------------------------------------------- #
 pnb_mig <- pnb_mig[pnb_mig$ID != "PNB-C2143",]
 table(pnb_mig$ID)
+length(unique(pnb_mig$ID))
 
 #### Sf/sp class ####
 # ----------------- #
@@ -113,7 +122,7 @@ projLatLon <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 projUTM <- '+init=epsg:32743'
 
 # Non projected spatial object
-pnb_sf <- st_as_sf(pnb_trip,
+pnb_sf <- st_as_sf(pnb_mig,
                    coords = c("LON", "LAT"),
                    crs = projLatLon)
 
@@ -134,14 +143,14 @@ mapview(pnb_sp_utm,
         zcol = "ID")
 
 # ---- Creation d'un deuxieme ID pour voir tous les points d'un meme individu
-head(pnb_sp_utm)
-pnb_sp_utm$ID2 <- substr(pnb_sp_utm$ID,
-                         5,
-                         9)
+# head(pnb_sp_utm)
+# pnb_sp_utm$ID2 <- substr(pnb_sp_utm$ID,
+#                          5,
+#                          9)
 
-pnb_list <- split(pnb_sp_utm,
-                  pnb_sp_utm$ID2)
-mapview(pnb_list)
+# pnb_list <- split(pnb_sp_utm,
+#                   pnb_sp_utm$ID2)
+# mapview(pnb_list)
 
 # ---- Creation d'une liste par ID
 pnb_list2 <- split(pnb_sp_utm,
@@ -160,7 +169,7 @@ ker50_list <- lapply(pnb_list2,
                          KUD <- kernelUD(x,
                                         #  h = 2,
                                         h = "href",
-                                        #  grid = 500,
+                                         grid = 500
                                          )
                          KUDvol <- getvolumeUD(KUD)
                          ver50 <- getverticeshr(KUDvol, 50)
@@ -169,20 +178,21 @@ ker50_list <- lapply(pnb_list2,
 length(ker50_list)
 mapview(ker50_list)
 
+ker90_list <- lapply(pnb_list2,
+                     function(x) {
+                         KUD <- kernelUD(x,
+                                        #  h = 2,
+                                        h = "href",
+                                         grid = 500
+                                         )
+                         KUDvol <- getvolumeUD(KUD)
+                         ver90 <- getverticeshr(KUDvol, 90)
+                         ver90
+                     })
+length(ker90_list)
+mapview(ker90_list)
+
 #### map production ####
-
-# obtention des coordonnees
-st_coordinates(pnb_sf_utm)
-class(pnb_sf_utm)
-coord <- apply(st_coordinates(pnb_sf_utm),
-               2,
-               range)
-
-x_min <- coord[1, 1]
-x_max <- coord[2, 1]
-
-y_min <- coord[1, 2]
-y_max <- coord[2, 2]
 
 # Cadrage de la donnees - defini la fenetre de l'ocean indien ou les petrels peuvent potentiellement s'alimenter
 lon_min = 10
@@ -191,20 +201,11 @@ lat_min = -40
 lat_max = 30
 
 # ----- #
+
+kl <- 
 lapply(pnb_list2, function (x) {
     
     print(unique(x$ID))
-
-    png(paste("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/maps/kernels/PNB_isotope_ker_50_90_",
-              unique(x$ID),
-              ".png",
-              sep = ""),
-    res = 300,
-    width = 70,
-    height = 50,
-    pointsize = 12,
-    unit = "cm",
-    bg = "transparent")
     
     
     KUD <- kernelUD(x,
@@ -220,6 +221,32 @@ lapply(pnb_list2, function (x) {
     ver90sf <- st_as_sf(ver90) 
     ver90spLL <- st_transform(ver90sf, crs = 4326)
     
+    kernel_list <- list(ver50spLL, ver90spLL)
+    kernel_list
+})
+
+for(i in 1:length(kl)){
+    names(kl[[i]])[1] <- names(kl[i])
+    names(kl[[i]])[2] <- names(kl[i])    
+   }
+# for the GithubPage
+# saveRDS(kl,
+#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/kernel50-90.rds")
+
+lapply(kl, function(x) {
+    id <- names(x)[1]
+    print(id)
+        
+    # png(paste("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/maps/kernels/PNB_isotope_ker_50_90_",
+    #           id,
+    #           ".png",
+    #           sep = ""),
+    # res = 300,
+    # width = 70,
+    # height = 50,
+    # pointsize = 12,
+    # unit = "cm",
+    # bg = "transparent")
     # x11()    
     plot(lon_col,
          lat_col,
@@ -227,25 +254,25 @@ lapply(pnb_list2, function (x) {
          col = "darkred",
          cex.lab = 2,
          font.lab = 2,
-         main = unique(x$ID),
+         main = id,
          xlab = "Longitude",
          ylab = "Latitude",
          cex.axis = 1.5,
          xlim = c(lon_min, lon_max),
          ylim = c(lat_min, lat_max))
   
-  plot(ver90spLL,
+  plot(x[[2]],
        add = TRUE,
        lwd = 1.5,
        border = "#bfd1ff",
        col = "#bfd1ff")
   
-  plot(ver50spLL,
+  plot(x[[1]],
        add = TRUE,
        lwd = 1.5,
        border = "#004FFF",
        col = "#004FFF")
-  plot(st_transform(st_as_sf(x), crs = 4326),
+  plot(pnb_sf[pnb_sf$ID == id,],
        add = TRUE,
        col = "darkgrey",
        pch = 3,
@@ -261,20 +288,3 @@ lapply(pnb_list2, function (x) {
   
   dev.off()
 })
-
-#### test for #1
-class(ker50_list[[1]])
-ker <- ker50_list[[2]]
-ker_sf <- st_as_sf(ker)
-plot(ker_sf)
-centro <- st_centroid(ker_sf)
-
-plot(ker_sf[1])
-points(8007185,
-       -1655446)
-plot(centro[1], col = "black", pch = 19, add = T)
-x <- pnb_list2[[2]]
-x
-head(x)
-
-summary(pnb_list3)
