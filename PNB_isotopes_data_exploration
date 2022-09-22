@@ -288,3 +288,75 @@ lapply(kl, function(x) {
   
   dev.off()
 })
+
+#### Centroides des kernels 50 ####
+
+kern <- readRDS("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/kernel50-90.rds")
+kern
+
+ker50 <- lapply(kern, function(x) {x[[1]]})
+length(ker50)
+mapview::mapview(ker50)
+
+# ----- test for kernel with 2 areas, such as ker50[[9]] ker50[[22]]
+test <- ker50[[22]]
+plot(sf::st_geometry(test))
+plot(sf::st_centroid(test), add = T)
+
+test1 <- ker50[[9]]
+plot(sf::st_geometry(test1))
+plot(sf::st_centroid(test1), add = T)
+
+# ----- Calcul automatique des centroides de kernel
+
+centro <- lapply(ker50,
+                 function(x) {
+                     
+                     if(sf::st_is_valid(x) == FALSE) { # certains polygones non valides
+                         x <- sf::st_make_valid(x)
+                     }
+                     sf::st_centroid(x)
+                 })
+# ----- verification visuelle
+
+# for (i in 1:length(ker50)) {
+#     x11()
+#     plot(sf::st_geometry(ker50[[i]]))
+#     plot(centro[[i]],
+#          add = T,
+#          col = "red")
+# }
+
+# ----- extraction & completion des metadonnees
+coord_centro <- lapply(centro,
+                       function(x) {
+                           sf::st_coordinates(x)
+                       })
+
+coord <- data.frame(ID = names(centro), do.call("rbind", coord_centro), row.names = NULL)
+names(coord) <- c("ID", "CENTRO_LON", "CENTRO_LAT")
+
+# verification visuelle
+# for (i in 1:length(ker50)) {
+#     x11()
+#     plot(sf::st_geometry(ker50[[i]]))
+#     points(coord$CENTRO_LON[i],
+#          coord$CENTRO_LAT[i],
+#          col = "red")
+# }
+
+# Creation du nouveau fichier
+# metadat <- read.table("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_SI_HG_GLS.txt",
+#                       sep = "\t",
+#                       dec = ",",
+#                       h = TRUE)
+# metadat
+# all(metadat$ID %in% coord$ID)
+# all(coord$ID %in% metadat$ID)
+
+# metadat2 <- left_join(metadat,
+#                       coord,
+#                       by = "ID")
+
+# write.table(metadat2,
+#             "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_SI_HG_GLS_centroide.txt")
