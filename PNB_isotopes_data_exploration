@@ -359,4 +359,43 @@ names(coord) <- c("ID", "CENTRO_LON", "CENTRO_LAT")
 #                       by = "ID")
 
 # write.table(metadat2,
-#             "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_SI_HG_GLS_centroide.txt")
+#             "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_SI_HG_GLS_centroide.txt",
+#             sep = "\t")
+
+
+iso <- read.table("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_SI_HG_GLS_centroide.txt",
+                      sep = "\t",
+                      dec = ",",
+                      h = TRUE)
+iso
+
+plot(iso$CENTRO_LAT,
+     iso$HG_MEAN)
+plot(iso$CENTRO_LON,
+     iso$HG_MEAN)
+
+plot(iso$CENTRO_LAT,
+     iso$d13C_MEAN)
+plot(iso$CENTRO_LON,
+     iso$d13C_MEAN)
+
+plot(iso$CENTRO_LAT,
+     iso$d15N_MEAN)
+plot(iso$CENTRO_LON,
+     iso$d15N_MEAN)
+
+# ---------- #
+plot(iso$CENTRO_LON,
+     iso$CENTRO_LAT,
+     pch = 16,
+     cex = scales::rescale(as.numeric(iso$d13C_MEAN), to = c(1,5)))
+
+plot(iso$CENTRO_LON,
+     iso$CENTRO_LAT,
+     pch = 16,
+     cex = scales::rescale(as.numeric(iso$d15N_MEAN), to = c(1, 5)))
+
+plot(iso$CENTRO_LON,
+     iso$CENTRO_LAT,
+     pch = 16,
+     cex = scales::rescale(as.numeric(iso$HG_MEAN), to = c(1, 5)))
