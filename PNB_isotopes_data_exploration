@@ -362,6 +362,7 @@ names(coord) <- c("ID", "CENTRO_LON", "CENTRO_LAT")
 #             "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_SI_HG_GLS_centroide.txt",
 #             sep = "\t")
 
+#### Regression entre carbone, azote & mercure vs. centroides kernel 50 ####
 
 iso <- read.table("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_SI_HG_GLS_centroide.txt",
                       sep = "\t",
@@ -371,18 +372,18 @@ iso
 
 plot(iso$CENTRO_LAT,
      iso$HG_MEAN)
-plot(iso$CENTRO_LON,
-     iso$HG_MEAN)
+# plot(iso$CENTRO_LON,
+#      iso$HG_MEAN)
 
 plot(iso$CENTRO_LAT,
      iso$d13C_MEAN)
-plot(iso$CENTRO_LON,
-     iso$d13C_MEAN)
+# plot(iso$CENTRO_LON,
+#      iso$d13C_MEAN)
 
 plot(iso$CENTRO_LAT,
      iso$d15N_MEAN)
-plot(iso$CENTRO_LON,
-     iso$d15N_MEAN)
+# plot(iso$CENTRO_LON,
+#      iso$d15N_MEAN)
 
 # ---------- #
 plot(iso$CENTRO_LON,
@@ -399,3 +400,53 @@ plot(iso$CENTRO_LON,
      iso$CENTRO_LAT,
      pch = 16,
      cex = scales::rescale(as.numeric(iso$HG_MEAN), to = c(1, 5)))
+
+#### Extraction des points dans les kernels 50 ####
+# chargement des points
+pnb_trip <- read.table("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_TsTrajets_filtre_Audrey_data.txt",
+                       h = TRUE,
+                       sep = "\t")
+head(pnb_trip$DATE)
+
+# traitement des points
+pnb_trip$DATE <- as.POSIXct(pnb_trip$DATE,
+                         format = "%Y-%m-%d %H:%M") # Date format
+pnb_mig <- pnb_trip[pnb_trip$TYPE == "MIG", ]
+dim(pnb_mig) # from 6481 rows to 3620
+table(pnb_mig$TYPE)
+
+pnb_mig <- pnb_mig[pnb_mig$ID != "PNB-C2143", ] # retrait car pas de dosages
+table(pnb_mig$ID)
+length(unique(pnb_mig$ID))
+
+# Conversion in sf Spatial Object
+projLatLon <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+# UTM 43S corresponding to the center of the Indian ocean
+# UTM 43 => 32743
+projUTM <- '+init=epsg:32743'
+
+pnb_sf <- st_as_sf(pnb_mig,
+                   coords = c("LON", "LAT"),
+                   crs = projLatLon)
+pnb_sp <- as(pnb_sf, "Spatial")
+
+# chargement kernels
+kernels <- readRDS("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/kernel50-90.rds")
+str(kernels)
+
+k50 <- lapply(kernels,
+              function(x){
+                   ker <- x[[1]]
+                   ker
+              })
+length(k50)
+mapview(k50)
+names(k50)[1]
+
+ex <- st_filter(pnb_sf[pnb_sf$ID == "PNB-C2127", ],
+                k50[1]) # FAIL!
+
+# intersection kernel & points
+
+#### Extraction des températures sous les points ####
+#### Calcul de temperatures moyennes à partir de temp sous les points ####
