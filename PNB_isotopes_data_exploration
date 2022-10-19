@@ -423,12 +423,13 @@ length(unique(pnb_mig$ID))
 projLatLon <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 # UTM 43S corresponding to the center of the Indian ocean
 # UTM 43 => 32743
-projUTM <- '+init=epsg:32743'
+# projUTM <- '+init=epsg:32743'
 
 pnb_sf <- st_as_sf(pnb_mig,
                    coords = c("LON", "LAT"),
                    crs = projLatLon)
-pnb_sp <- as(pnb_sf, "Spatial")
+pnb_sf_list <- split(pnb_sf,
+                     pnb_sf$ID)
 
 # chargement kernels
 kernels <- readRDS("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/kernel50-90.rds")
@@ -440,13 +441,23 @@ k50 <- lapply(kernels,
                    ker
               })
 length(k50)
-mapview(k50)
+# mapview(k50)
 names(k50)[1]
-
-ex <- st_filter(pnb_sf[pnb_sf$ID == "PNB-C2127", ],
-                k50[1]) # FAIL!
+plot(k50[[1]])
+plot(pnb_sf_list[[1]])
 
 # intersection kernel & points
+k1 <- k50[[2]]
+p1 <- pnb_sf_list[[2]]
+
+plot(st_geometry(p1))
+plot(st_geometry(k1), add = T)
+
+sf_use_s2(FALSE)
+ex <- st_intersects(st_geometry(k1),
+                      st_geometry(p1)) # FAILLLLL
+plot(st_geometry(p1[unlist(ex), ]), col = "red", add = TRUE)
+# !!!! areproduire sur une boucle !!!
 
 #### Extraction des températures sous les points ####
 #### Calcul de temperatures moyennes à partir de temp sous les points ####
