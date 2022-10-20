@@ -370,7 +370,7 @@ iso <- read.table("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DA
                       h = TRUE)
 iso
 
-# MERCURY
+# MERCURY vs. LATITUDE CENTROIDE
 plot(iso$CENTRO_LAT,
      iso$HG_MEAN,
      xlab = "Latitude",
@@ -399,7 +399,36 @@ lines(pred_df$lat,
       col = "red",
       lty = 4)
 
-# CARBON
+# MERCURY vs. LONGITUDE CENTROIDE
+plot(iso$CENTRO_LON,
+     iso$HG_MEAN,
+     xlab = "Longitude",
+     ylab = "Mean Hg",
+     bty = "n")
+
+mod11 <- lm(iso$HG_MEAN ~ iso$CENTRO_LON)
+summary(mod11)
+
+pred_mod11 <- predict.lm(mod11,
+                    se.fit = TRUE)
+pred_df11 <- data.frame(lon = iso$CENTRO_LON,
+                        fit_hg = pred_mod11$fit,
+                        se_fit_hg = pred_mod11$se.fit)
+pred_df11 <- pred_df11[order(pred_df11$lon), ]
+
+lines(pred_df11$lon,
+      pred_df11$fit_hg,
+      col = "red")
+lines(pred_df11$lon,
+      pred_df11$fit_hg - pred_df11$se_fit_hg,
+      col = "red",
+      lty = 4)
+lines(pred_df11$lon,
+      pred_df11$fit_hg + pred_df11$se_fit_hg,
+      col = "red",
+      lty = 4)
+
+# CARBON vs. LATITUDE CENTROIDE
 plot(iso$CENTRO_LAT,
      iso$d13C_MEAN,
      xlab = "Latitude",
@@ -427,7 +456,35 @@ lines(pred_df2$lat,
       col = "red",
       lty = 4)
 
-# AZOTE
+# CARBON vs. LONGITUDE CENTROIDE
+plot(iso$CENTRO_LON,
+     iso$d13C_MEAN,
+     xlab = "Longitude",
+     ylab = "Mean d13C",
+     bty = "n")
+mod22 <- lm(iso$d13C_MEAN ~ iso$CENTRO_LON)
+summary(mod22)
+
+pred_mod22 <- predict.lm(mod22,
+                         se.fit = TRUE)
+pred_df22 <- data.frame(lon = iso$CENTRO_LON,
+                        fit_13c = pred_mod22$fit,
+                        se_fit_13c = pred_mod22$se.fit)
+pred_df22 <- pred_df22[order(pred_df22$lon), ]
+
+lines(pred_df22$lon,
+      pred_df22$fit_13c,
+      col = "red")
+lines(pred_df22$lon,
+      pred_df22$fit_13c - pred_df22$se_fit_13c,
+      col = "red",
+      lty = 4)
+lines(pred_df22$lon,
+      pred_df22$fit_13c + pred_df22$se_fit_13c,
+      col = "red",
+      lty = 4)
+
+# AZOTE vs LATITUDE CENTROIDE
 plot(iso$CENTRO_LAT,
      iso$d15N_MEAN,
      xlab = "Latitude",
@@ -456,18 +513,60 @@ lines(pred_df3$lat,
       col = "red",
       lty = 4)
 
+# AZOTE vs LONGITUDE CENTROIDE
+plot(iso$CENTRO_LON,
+     iso$d15N_MEAN,
+     xlab = "Longitude",
+     ylab = "Mean d15N",
+     bty = "n")
+
+mod33 <- lm(iso$d15N_MEAN ~ iso$CENTRO_LON)
+summary(mod33)
+
+pred_mod33 <- predict.lm(mod33,
+                         se.fit = TRUE)
+pred_df33 <- data.frame(lon = iso$CENTRO_LON,
+                        fit_15n = pred_mod33$fit,
+                        se_fit_15n = pred_mod33$se.fit)
+pred_df33 <- pred_df33[order(pred_df33$lon), ]
+
+lines(pred_df33$lon,
+      pred_df33$fit_15n,
+      col = "red")
+lines(pred_df33$lon,
+      pred_df33$fit_15n - pred_df33$se_fit_15n,
+      col = "red",
+      lty = 4)
+lines(pred_df33$lon,
+      pred_df33$fit_15n + pred_df33$se_fit_15n,
+      col = "red",
+      lty = 4)
+
 # global pred for GH page
-# glob_pred <- left_join(pred_df,
-#                        pred_df2,
-#                        "lat")
-# glob_pred <- left_join(glob_pred,
-#                        pred_df3,
-#                        "lat")
-# saveRDS(glob_pred,
-#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/ISOSCAPE_global_pred_HG_13C_15N.rds")
+# glob_pred_LAT <- left_join(pred_df,
+#                            pred_df2,
+#                            "lat")
+# glob_pred_LAT <- left_join(glob_pred_LAT,
+#                            pred_df3,
+#                            "lat")
+
+# glob_pred_LON <- left_join(pred_df11,
+#                            pred_df22,
+#                            "lon")
+# glob_pred_LON <- left_join(glob_pred_LON,
+#                            pred_df33,
+#                            "lon")
+# saveRDS(glob_pred_LAT,
+#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/ISOSCAPE_pred_LAT_vs_HG_C_N.rds")
+
+# saveRDS(glob_pred_LON,
+#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/ISOSCAPE_pred_LON_vs_HG_C_N.rds")
 
 # saveRDS(list(mod1, mod2, mod3),
-#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/ISOSCAPE_lm_HG_13C_15N.rds")
+#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/ISOSCAPE_lm_LAT_vs_HG_C_N.rds")
+
+# saveRDS(list(mod11, mod22, mod33),
+#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/ISOSCAPE_lm_LON_vs_HG_C_N.rds")
 # ---------- #
 plot(iso$CENTRO_LON,
      iso$CENTRO_LAT,
