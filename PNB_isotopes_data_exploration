@@ -366,25 +366,108 @@ names(coord) <- c("ID", "CENTRO_LON", "CENTRO_LAT")
 
 iso <- read.table("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_SI_HG_GLS_centroide.txt",
                       sep = "\t",
-                      dec = ",",
+                      dec = ".",
                       h = TRUE)
 iso
 
+# MERCURY
 plot(iso$CENTRO_LAT,
-     iso$HG_MEAN)
-# plot(iso$CENTRO_LON,
-#      iso$HG_MEAN)
+     iso$HG_MEAN,
+     xlab = "Latitude",
+     ylab = "Mean Hg",
+     bty = "n")
 
+mod1 <- lm(iso$HG_MEAN ~ iso$CENTRO_LAT)
+summary(mod1)
+
+pred_mod <- predict.lm(mod1,
+                    se.fit = TRUE)
+pred_df <- data.frame(lat = iso$CENTRO_LAT,
+                      fit_hg = pred_mod$fit,
+                      se_fit_hg = pred_mod$se.fit)
+pred_df <- pred_df[order(pred_df$lat), ]
+
+lines(pred_df$lat,
+    pred_df$fit_hg,
+     col = "red")
+lines(pred_df$lat,
+      pred_df$fit_hg - pred_df$se_fit_hg,
+      col = "red",
+      lty = 4)
+lines(pred_df$lat,
+      pred_df$fit_hg + pred_df$se_fit_hg,
+      col = "red",
+      lty = 4)
+
+# CARBON
 plot(iso$CENTRO_LAT,
-     iso$d13C_MEAN)
-# plot(iso$CENTRO_LON,
-#      iso$d13C_MEAN)
+     iso$d13C_MEAN,
+     xlab = "Latitude",
+     ylab = "Mean d13C",
+     bty = "n")
+mod2 <- lm(iso$d13C_MEAN ~ iso$CENTRO_LAT)
+summary(mod2)
 
+pred_mod2 <- predict.lm(mod2,
+                    se.fit = TRUE)
+pred_df2 <- data.frame(lat = iso$CENTRO_LAT,
+                       fit_13c = pred_mod2$fit,
+                       se_fit_13c = pred_mod2$se.fit)
+pred_df2 <- pred_df2[order(pred_df2$lat), ]
+
+lines(pred_df2$lat,
+      pred_df2$fit_13c,
+      col = "red")
+lines(pred_df2$lat,
+      pred_df2$fit_13c - pred_df2$se_fit_13c,
+      col = "red",
+      lty = 4)
+lines(pred_df2$lat,
+      pred_df2$fit_13c + pred_df2$se_fit_13c,
+      col = "red",
+      lty = 4)
+
+# AZOTE
 plot(iso$CENTRO_LAT,
-     iso$d15N_MEAN)
-# plot(iso$CENTRO_LON,
-#      iso$d15N_MEAN)
+     iso$d15N_MEAN,
+     xlab = "Latitude",
+     ylab = "Mean d15N",
+     bty = "n")
 
+mod3 <- lm(iso$d15N_MEAN ~ iso$CENTRO_LAT)
+summary(mod3)
+
+pred_mod3 <- predict.lm(mod3,
+                        se.fit = TRUE)
+pred_df3 <- data.frame(lat = iso$CENTRO_LAT,
+                       fit_15n = pred_mod3$fit,
+                       se_fit_15n = pred_mod3$se.fit)
+pred_df3 <- pred_df3[order(pred_df3$lat), ]
+
+lines(pred_df3$lat,
+      pred_df3$fit_15n,
+      col = "red")
+lines(pred_df3$lat,
+      pred_df3$fit_15n - pred_df3$se_fit_15n,
+      col = "red",
+      lty = 4)
+lines(pred_df3$lat,
+      pred_df3$fit_15n + pred_df3$se_fit_15n,
+      col = "red",
+      lty = 4)
+
+# global pred for GH page
+# glob_pred <- left_join(pred_df,
+#                        pred_df2,
+#                        "lat")
+# glob_pred <- left_join(glob_pred,
+#                        pred_df3,
+#                        "lat")
+# saveRDS(glob_pred,
+#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/ISOSCAPE_global_pred_HG_13C_15N.rds")
+
+# saveRDS(list(mod1, mod2, mod3),
+#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/ISOSCAPE_lm_HG_13C_15N.rds")
 # ---------- #
 plot(iso$CENTRO_LON,
      iso$CENTRO_LAT,
