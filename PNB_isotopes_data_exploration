@@ -629,17 +629,100 @@ plot(k50[[1]])
 plot(pnb_sf_list[[1]])
 
 # intersection kernel & points
-k1 <- k50[[2]]
-p1 <- pnb_sf_list[[2]]
+points_in_k <- lapply(pnb_sf_list,
+                      function(x) {
+                          id <- unique(x$ID)
+                          k <- k50[[id]]
+                          plot(st_geometry(x))
+                          plot(st_geometry(k), add = T)
+                          
+                          sf_use_s2(FALSE)
+                          ex <- st_intersects(st_geometry(k),
+                                              st_geometry(x))
+                          x[unlist(ex), ]
+                      })
+# verification ==> OK
+names(pnb_sf_list) == names(points_in_k)
+names(points_in_k) == names(k50)
+for (i in 1:22) {
+      x11()
+      plot(st_geometry(pnb_sf_list[[i]]))
+      plot(st_geometry(k50[[i]]),
+           add = T)
+      plot(st_geometry(points_in_k[[i]]),
+           col = "red",
+           add = T)
+}
+# saveRDS(points_in_k,
+#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels.rds")
 
-plot(st_geometry(p1))
-plot(st_geometry(k1), add = T)
+#### Extraction des dates min & max par indiv
+range_in_k <- lapply(points_in_k,
+                     function(x) {
+                          data.frame(ID = unique(x$ID),
+                                     MIN_DATE_K50 = min(x$DATE),
+                                     MAX_DATE_K50 = max(x$DATE))
+                     })
+range_dates <- do.call("rbind",
+                       range_in_k)
 
-sf_use_s2(FALSE)
-ex <- st_intersects(st_geometry(k1),
-                      st_geometry(p1)) # FAILLLLL
-plot(st_geometry(p1[unlist(ex), ]), col = "red", add = TRUE)
-# !!!! areproduire sur une boucle !!!
+iso2 <- left_join(iso,
+                  range_dates,
+                  by = "ID")
+#### Time range for SST download
+min(iso2$MIN_DATE_K50)
+max(iso2$MAX_DATE_K50)
 
-#### Extraction des températures sous les points ####
-#### Calcul de temperatures moyennes à partir de temp sous les points ####
+# saveRDS(iso2,
+#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates.rds")
+
+#### Extraction des températures sous les kernels 50 & calcul moyennes et sd ####
+sst_rasters <- list.files("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/5-PTEBAR_argos_JUV/ENV_DATA_Romain/Output_R/SST_2018-2019/",
+                   full.names = TRUE)
+
+sst <- rast(sst_rasters)
+names(sst) <- time(sst)
+
+x <- iso2[1, ]
+d1 <- date(x$MIN_DATE_K50)
+d2 <- date(x$MAX_DATE_K50)
+sst_part <- sst[[date(time(sst)) >= d1 & date(time(sst)) <= d2]]
+sst_mean <- mean(sst_part)
+plot(sst_mean)
+sst_ext <- terra::extract(sst_mean,
+                          k50[[x$ID]])
+sst_mean_pol <- mean(sst_ext$mean,
+                     na.rm = T)
+sst_sd_poly <- sd(sst_ext$mean,
+                  na.rm = T)
+
+sst_bilan <- lapply(split(iso2, iso2$ID),
+                   function(x){
+                       d1 <- date(x$MIN_DATE_K50)
+                       d2 <- date(x$MAX_DATE_K50)
+                       
+                       sst_part <- sst[[date(time(sst)) >= d1 & date(time(sst)) <= d2]]
+                       sst_mean <- mean(sst_part)
+                       sst_ext <- terra::extract(sst_mean,
+                          k50[[x$ID]])
+                       
+                       sst_mean_poly <- mean(sst_ext$mean,
+                                            na.rm = T)
+                       sst_sd_poly <- sd(sst_ext$mean,
+                                         na.rm = T)
+                       n_pix <- nrow(sst_ext)
+                       
+                       f <- data.frame(ID = x$ID,
+                                       N_PIX = n_pix,
+                                       SST_MEAN = sst_mean_poly,
+                                       SST_SD = sst_sd_poly)
+                   })
+sst_bilan_df <- do.call("rbind",
+                        sst_bilan)
+
+iso3 <- left_join(iso2,
+                  sst_bilan_df,
+                  "ID")
+
+# saveRDS(iso3,
+#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates_SST.rds")
