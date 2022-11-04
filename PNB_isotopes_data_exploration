@@ -734,3 +734,65 @@ plot(iso3$CENTRO_LON,
      iso3$CENTRO_LAT,
      cex = scales::rescale(iso3$SST_MEAN,
                    c(0.5, 5)))
+
+
+#### Relation btw SST & all others indices ####
+meta <- readRDS("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates_SST.rds") 
+
+head(meta)
+summary(meta)
+x11()
+plot(x = meta$CENTRO_LAT,
+     y = meta$SST_MEAN,
+     xlim = c(min(meta$CENTRO_LAT), 25),
+     ylim = c(min(meta$SST_MEAN - meta$SST_SD), max(meta$SST_MEAN + meta$SST_SD)),
+     bty = "n",
+     ylab = "SST (K)",
+     xlab = "Latitude (°)")
+
+segments(x0 = meta$CENTRO_LAT,
+         y0 = meta$SST_MEAN + meta$SST_SD,
+         x1 = meta$CENTRO_LAT,
+         y1 = meta$SST_MEAN - meta$SST_SD)
+
+mini_meta <- meta[, c("CENTRO_LAT", "CENTRO_LON", "HG_MEAN", "d13C_MEAN", "d15N_MEAN")]
+
+X11()
+par(mfrow = c(2, 3))
+graf <- list()
+apply(mini_meta,
+      2,
+      function(x) {
+           plot(x = x,
+                y = meta$SST_MEAN,
+                xlim = c(min(x), max(x)),
+                ylim = c(min(meta$SST_MEAN - meta$SST_SD), max(meta$SST_MEAN + meta$SST_SD)),
+                bty = "n",
+                ylab = "SST (K)",
+                xlab = names(x),
+                cex = scales::rescale(as.numeric(meta$N_PIX), to = c(1, 5)))
+           segments(x0 = x,
+                    y0 = meta$SST_MEAN + meta$SST_SD,
+                    x1 = x,
+                    y1 = meta$SST_MEAN - meta$SST_SD)
+           
+           mod <- lm(meta$SST_MEAN ~ x)
+          #  print(head(x))
+           pred_mod <- predict.lm(mod,
+                                  se.fit = TRUE)
+           pred_df <- data.frame(x = x,
+                                 fit_sst = pred_mod$fit,
+                                 se_fit_sst = pred_mod$se.fit)
+           pred_df <- pred_df[order(pred_df$x), ]
+           lines(pred_df$x,
+                 pred_df$fit_sst,
+                 col = "red")
+           lines(pred_df$x,
+                 pred_df$fit_sst - pred_df$se_fit_sst,
+                 col = "red",
+                 lty = 4)
+           lines(pred_df$x,
+                 pred_df$fit_sst + pred_df$se_fit_sst,
+                 col = "red",
+                 lty = 4)           
+      })
