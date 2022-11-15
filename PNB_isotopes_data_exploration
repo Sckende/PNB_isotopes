@@ -247,7 +247,7 @@ lapply(kl, function(x) {
     # pointsize = 12,
     # unit = "cm",
     # bg = "transparent")
-    # x11()    
+    x11()    
     plot(lon_col,
          lat_col,
          pch = 16,
@@ -370,21 +370,37 @@ iso <- read.table("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DA
                       h = TRUE)
 iso
 
-# MERCURY vs. LATITUDE CENTROIDE
+### MERCURY vs. LATITUDE CENTROIDE
 plot(iso$CENTRO_LAT,
      iso$HG_MEAN,
      xlab = "Latitude",
      ylab = "Mean Hg",
      bty = "n")
 
+# ----> models
 mod1 <- lm(iso$HG_MEAN ~ iso$CENTRO_LAT)
 summary(mod1)
 
+mod_quadra1 <- lm(iso$HG_MEAN ~ poly(iso$CENTRO_LAT, 2))
+summary(mod_quadra1)
+
+mod_gam1 <- mgcv::gam(iso$HG_MEAN ~ s(iso$CENTRO_LAT))
+summary(mod_gam1)
+
+# Visualization
 pred_mod <- predict.lm(mod1,
                     se.fit = TRUE)
+pred_mod_quadra <- predict.lm(mod_quadra1,
+                              se.fit = TRUE)
+pred_mod_gam <- predict(mod_gam1,
+                        se.fit = TRUE)
 pred_df <- data.frame(lat = iso$CENTRO_LAT,
                       fit_hg = pred_mod$fit,
-                      se_fit_hg = pred_mod$se.fit)
+                      se_fit_hg = pred_mod$se.fit,
+                      fit_hg_quadra = pred_mod_quadra$fit,
+                      se_fit_hg_quadra = pred_mod_quadra$se.fit,
+                      fit_hg_gam = pred_mod_gam$fit,
+                      se_fit_hg_gam = pred_mod_gam$se.fit)
 pred_df <- pred_df[order(pred_df$lat), ]
 
 lines(pred_df$lat,
@@ -397,6 +413,30 @@ lines(pred_df$lat,
 lines(pred_df$lat,
       pred_df$fit_hg + pred_df$se_fit_hg,
       col = "red",
+      lty = 4)
+
+lines(pred_df$lat,
+    pred_df$fit_hg_quadra,
+     col = "darkgreen")
+lines(pred_df$lat,
+      pred_df$fit_hg_quadra - pred_df$se_fit_hg_quadra,
+      col = "darkgreen",
+      lty = 4)
+lines(pred_df$lat,
+      pred_df$fit_hg_quadra + pred_df$se_fit_hg_quadra,
+      col = "darkgreen",
+      lty = 4)
+
+lines(pred_df$lat,
+    pred_df$fit_hg_gam,
+     col = "darkblue")
+lines(pred_df$lat,
+      pred_df$fit_hg_gam - pred_df$se_fit_hg_gam,
+      col = "darkblue",
+      lty = 4)
+lines(pred_df$lat,
+      pred_df$fit_hg_gam + pred_df$se_fit_hg_gam,
+      col = "darkblue",
       lty = 4)
 
 # MERCURY vs. LONGITUDE CENTROIDE
@@ -676,6 +716,8 @@ max(iso2$MAX_DATE_K50)
 # saveRDS(iso2,
 #         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates.rds")
 
+# iso2 <- readRDS("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates.rds")
+
 #### Extraction des températures sous les kernels 50 & calcul moyennes et sd ####
 sst_rasters <- list.files("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/5-PTEBAR_argos_JUV/ENV_DATA_Romain/Output_R/SST_2018-2019/",
                    full.names = TRUE)
@@ -687,7 +729,14 @@ x <- iso2[1, ]
 d1 <- date(x$MIN_DATE_K50)
 d2 <- date(x$MAX_DATE_K50)
 sst_part <- sst[[date(time(sst)) >= d1 & date(time(sst)) <= d2]]
-sst_mean <- mean(sst_part)
+range(sst_part)
+
+# --> conversion kelvin en degre celsius: K - 273.15 = °c
+sst_part2 <- sst_part - 273.15
+range(sst_part2)
+
+# moyenne
+sst_mean <- mean(sst_part2)
 plot(sst_mean)
 sst_ext <- terra::extract(sst_mean,
                           k50[[x$ID]])
@@ -702,7 +751,8 @@ sst_bilan <- lapply(split(iso2, iso2$ID),
                        d2 <- date(x$MAX_DATE_K50)
                        
                        sst_part <- sst[[date(time(sst)) >= d1 & date(time(sst)) <= d2]]
-                       sst_mean <- mean(sst_part)
+                       conv <- sst_part - 273.15
+                       sst_mean <- mean(conv)
                        sst_ext <- terra::extract(sst_mean,
                           k50[[x$ID]])
                        
@@ -725,19 +775,35 @@ iso3 <- left_join(iso2,
                   "ID")
 
 # saveRDS(iso3,
-#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates_SST.rds")
+#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates_SST_degre.rds")
 # write.table(iso3,
-#             "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates_SST.txt",
-#             sep = "\t")
+#             "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates_SST_degre.txt",
+#             sep = "\t",
+#             row.names = FALSE)
 
 plot(iso3$CENTRO_LON,
      iso3$CENTRO_LAT,
      cex = scales::rescale(iso3$SST_MEAN,
                    c(0.5, 5)))
 
+#### CARTO SST GLOBALE ####
+# date min = date min d'entree dans k50 tout ind confondus
+# date max = date max de sortie de k50 tout ind confondus
+
+dmin <- min(date(iso3$MIN_DATE_K50))
+dmax <- max(date(iso3$MAX_DATE_K50))
+
+sst_part <- sst[[date(time(sst)) >= dmin & date(time(sst)) <= dmax]]
+conv <- sst_part - 273.15
+sst_mean <- mean(conv)
+
+plot(sst_mean)
+# saveRDS(sst_mean,
+#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_SST_mean_global.rds")
+
 
 #### Relation btw SST & all others indices ####
-meta <- readRDS("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates_SST.rds") 
+meta <- readRDS("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates_SST_degre.rds") 
 
 head(meta)
 summary(meta)
@@ -747,7 +813,7 @@ plot(x = meta$CENTRO_LAT,
      xlim = c(min(meta$CENTRO_LAT), 25),
      ylim = c(min(meta$SST_MEAN - meta$SST_SD), max(meta$SST_MEAN + meta$SST_SD)),
      bty = "n",
-     ylab = "SST (K)",
+     ylab = "SST (°c)",
      xlab = "Latitude (°)")
 
 segments(x0 = meta$CENTRO_LAT,
@@ -768,7 +834,7 @@ apply(mini_meta,
                 xlim = c(min(x), max(x)),
                 ylim = c(min(meta$SST_MEAN - meta$SST_SD), max(meta$SST_MEAN + meta$SST_SD)),
                 bty = "n",
-                ylab = "SST (K)",
+                ylab = "SST (°c)",
                 xlab = names(x),
                 cex = scales::rescale(as.numeric(meta$N_PIX), to = c(1, 5)))
            segments(x0 = x,
