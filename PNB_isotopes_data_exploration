@@ -780,6 +780,7 @@ iso3 <- left_join(iso2,
 #             "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates_SST_degre.txt",
 #             sep = "\t",
 #             row.names = FALSE)
+iso3 <- readRDS("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates_SST_degre.rds")
 
 plot(iso3$CENTRO_LON,
      iso3$CENTRO_LAT,
