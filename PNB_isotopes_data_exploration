@@ -663,7 +663,8 @@ k50 <- lapply(kernels,
                    ker
               })
 length(k50)
-# mapview(k50)
+mapview(k50)
+class(k50)
 names(k50)[1]
 plot(k50[[1]])
 plot(pnb_sf_list[[1]])
@@ -787,6 +788,96 @@ plot(iso3$CENTRO_LON,
      cex = scales::rescale(iso3$SST_MEAN,
                    c(0.5, 5)))
 
+#### CARTO K50 GLOBALE ####
+bathy <- terra::rast("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/5-PTEBAR_argos_JUV/ENV_DATA_Romain/ETOPO1_Bed_g_geotiff_BATHY.tif")
+
+# Palette color for bathy
+# https://www.benjaminbell.co.uk/2019/08/bathymetric-maps-in-r-colour-palettes.html
+blue.col <- colorRampPalette(c("darkblue", "lightblue"))
+
+mi <- min(values(bathy)) + 100
+ma <- max(values(bathy)) + 100
+
+# Break points sequence for below sea level
+s1 <- seq(from = mi, to = 0, by = 0 - mi / 50)
+# Break points sequence for above sea level
+s2 <- seq(from = 0, to = ma, by = ma / 50)
+
+# Round sequence to nearest 100
+s1 <- round(s1, -2)
+s2 <- round(s2, -2)
+
+# Only show unique numbers
+s1 <- unique(s1)
+s2 <- unique(s2)
+
+# Combine sequences and remove the first value from second sequence
+s3 <- c(s1, s2[-1])
+
+# Plot
+plot(bathy,
+     col = c(blue.col(50),
+             terrain.colors(50)),
+     breaks = s3)
+
+plot(bathy)
+png("C:/Users/ccjuhasz/Desktop/ISOSCAPES_K50_global.png",
+    width = 1600,
+    height = 1000,
+    units = "px",
+    pointsize = 12,
+    bg = "white",
+    res = 100)
+par(mai = c(1, 1, 0.8, 0.8))
+maps::map("world",
+          add = FALSE,
+             fill = T,
+             xlim = c(lon_min, lon_max),
+             ylim = c(lat_min, lat_max),
+             col = "grey")
+plot(lon_col,
+     lat_col,
+     pch = 16,
+     col = "white",
+     axis = FALSE,
+     cex.lab = 2,
+     font.lab = 2,
+     xlab = "Longitude",
+     ylab = "Latitude",
+     cex.axis = 1.5,
+     xlim = c(lon_min, lon_max),
+     ylim = c(lat_min, lat_max),
+    xaxt = "n",
+    yaxt = "n")
+plot(bathy,
+     col = c(blue.col(50),
+             terrain.colors(50)),
+     breaks = s3,
+     add = TRUE,
+     cex.lab = 3,
+     cex.axis = 3)
+lapply(k50, plot,
+       add = T,
+       lwd = 1.5,
+       border = "#8b2a0072",
+       col = "#8b2a0072")
+maps::map("world",
+          add = TRUE,
+          fill = T,
+          xlim = c(lon_min, lon_max),
+          ylim = c(lat_min, lat_max),
+          col = "grey",
+          border = "white",
+          xaxt = "n",
+          yaxt = "n")
+points(lon_col,
+       lat_col,
+       pch = 23,
+       bg = "yellow",
+       cex = 3)
+box(lwd = 2)
+
+dev.off()
 #### CARTO SST GLOBALE ####
 # date min = date min d'entree dans k50 tout ind confondus
 # date max = date max de sortie de k50 tout ind confondus
