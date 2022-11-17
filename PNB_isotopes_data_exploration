@@ -195,7 +195,7 @@ mapview(ker90_list)
 #### map production ####
 
 # Cadrage de la donnees - defini la fenetre de l'ocean indien ou les petrels peuvent potentiellement s'alimenter
-lon_min = 10
+lon_min = 20
 lon_max = 130 
 lat_min = -40
 lat_max = 30
@@ -790,6 +790,7 @@ plot(iso3$CENTRO_LON,
 
 #### CARTO K50 GLOBALE ####
 bathy <- terra::rast("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/5-PTEBAR_argos_JUV/ENV_DATA_Romain/ETOPO1_Bed_g_geotiff_BATHY.tif")
+bathy <- terra::rast("C:/Users/ccjuhasz/Desktop/SMAC/SPATIAL_data_RUN/Indian_Ocean_Bathy.tif")
 
 # Palette color for bathy
 # https://www.benjaminbell.co.uk/2019/08/bathymetric-maps-in-r-colour-palettes.html
@@ -818,66 +819,88 @@ s3 <- c(s1, s2[-1])
 plot(bathy,
      col = c(blue.col(50),
              terrain.colors(50)),
+     breaks = s2)
+
+plot(bathy,
+     col = c(rep("transparent", 50),
+             terrain.colors(50)),
      breaks = s3)
 
-plot(bathy)
-png("C:/Users/ccjuhasz/Desktop/ISOSCAPES_K50_global.png",
+lat_min <- -50
+lat_max <- 30
+
+lon_min <- 20
+lon_max <- 130
+png("C:/Users/ccjuhasz/Desktop/ISOSCAPES_K50_global2.png",
     width = 1600,
     height = 1000,
     units = "px",
     pointsize = 12,
     bg = "white",
     res = 100)
+
 par(mai = c(1, 1, 0.8, 0.8))
-maps::map("world",
-          add = FALSE,
-             fill = T,
-             xlim = c(lon_min, lon_max),
-             ylim = c(lat_min, lat_max),
-             col = "grey")
-plot(lon_col,
-     lat_col,
-     pch = 16,
-     col = "white",
-     axis = FALSE,
-     cex.lab = 2,
-     font.lab = 2,
-     xlab = "Longitude",
-     ylab = "Latitude",
-     cex.axis = 1.5,
-     xlim = c(lon_min, lon_max),
-     ylim = c(lat_min, lat_max),
-    xaxt = "n",
-    yaxt = "n")
+# maps::map("world",
+#           add = FALSE,
+#              fill = T,
+#              xlim = c(lon_min, lon_max),
+#              ylim = c(lat_min, lat_max),
+#              col = "grey")
+# plot(lon_col,
+#      lat_col,
+#      pch = 16,
+#      col = "white",
+#      cex.lab = 2,
+#      font.lab = 2,
+#      xlab = "Longitude",
+#      ylab = "Latitude",
+#      cex.axis = 1.5,
+#      xlim = c(lon_min, lon_max),
+#      ylim = c(lat_min, lat_max),
+#      xaxt = "n",
+#      yaxt = "n")
 plot(bathy,
      col = c(blue.col(50),
              terrain.colors(50)),
      breaks = s3,
-     add = TRUE,
+     add = FALSE,
      cex.lab = 3,
-     cex.axis = 3)
-lapply(k50, plot,
-       add = T,
+     cex.axis = 3,
+     xlim = c(lon_min, lon_max),
+     ylim = c(lat_min, lat_max),
+     axes = FALSE,
+     legend = FALSE)
+lapply(k50,
+       plot,
+       add = TRUE,
        lwd = 1.5,
        border = "#8b2a0072",
-       col = "#8b2a0072")
-maps::map("world",
-          add = TRUE,
-          fill = T,
-          xlim = c(lon_min, lon_max),
-          ylim = c(lat_min, lat_max),
-          col = "grey",
-          border = "white",
-          xaxt = "n",
-          yaxt = "n")
+       col = "#8b2a0072",
+     xlim = c(lon_min, lon_max),
+     ylim = c(lat_min, lat_max))
+
+plot(bathy,
+     col = c(rep("transparent", 50),
+             terrain.colors(50)),
+     breaks = s3,
+     add = TRUE,
+     axes = FALSE,
+     legend = FALSE)
+
 points(lon_col,
        lat_col,
        pch = 23,
        bg = "yellow",
        cex = 3)
-box(lwd = 2)
+points(iso3$CENTRO_LON,
+       iso3$CENTRO_LAT,
+       pch = 20,
+       col = "black",
+       cex = 2)
+# box(lwd = 2)
 
 dev.off()
+
 #### CARTO SST GLOBALE ####
 # date min = date min d'entree dans k50 tout ind confondus
 # date max = date max de sortie de k50 tout ind confondus
