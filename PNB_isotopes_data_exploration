@@ -789,7 +789,7 @@ plot(iso3$CENTRO_LON,
                    c(0.5, 5)))
 
 #### CARTO K50 GLOBALE ####
-bathy <- terra::rast("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/5-PTEBAR_argos_JUV/ENV_DATA_Romain/ETOPO1_Bed_g_geotiff_BATHY.tif")
+# bathy <- terra::rast("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/5-PTEBAR_argos_JUV/ENV_DATA_Romain/ETOPO1_Bed_g_geotiff_BATHY.tif")
 bathy <- terra::rast("C:/Users/ccjuhasz/Desktop/SMAC/SPATIAL_data_RUN/Indian_Ocean_Bathy.tif")
 
 # Palette color for bathy
@@ -816,15 +816,55 @@ s2 <- unique(s2)
 s3 <- c(s1, s2[-1])
 
 # Plot
+k50_sp <- lapply(k50, as, "Spatial")
 plot(bathy,
      col = c(blue.col(50),
              terrain.colors(50)),
      breaks = s2)
-
-plot(bathy,
-     col = c(rep("transparent", 50),
+levelplot(bathy,
+          col.regions = c(blue.col(50),
              terrain.colors(50)),
-     breaks = s3)
+          at = s3,
+          color.key = FALSE) +
+layer(lapply(k50_sp,
+             sp.polygons,
+             col = "#8b2a0072",
+             fill = "#8b2a0072")) +
+layer(levelplot(bathy_test))
+
+# see https://gis.stackexchange.com/questions/243954/rastervis-polygon-under-raster-layer-in-r
+
+
+levelplot(bathy,
+          margin = FALSE,
+          col.regions = c(rep("transparent", 50),
+             terrain.colors(50)),
+          at = s3,
+          color.key = FALSE,
+          panel=function(...) {
+            sp.polygons(test, fill = "grey40", col = NA)
+            panel.levelplot(...)
+          }) 
+
+levelplot(bathy,
+          margin = FALSE,
+          col.regions = c(rep("transparent", 50),
+             terrain.colors(50)),
+          at = s3,
+          color.key = FALSE,
+          panel = function(...) {
+               lapply(k50_sp,
+             sp.polygons,
+             col = NA,
+             fill = "#8b2a0072")
+               panel.levelplot(...)
+          })
+# plot(bathy,
+#      col = c(rep("transparent", 50),
+#              terrain.colors(50)),
+#      breaks = s3)
+bathy_test <- bathy
+bathy_test[bathy_test < 0] <- NA
 
 lat_min <- -50
 lat_max <- 30
