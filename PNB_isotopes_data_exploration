@@ -844,21 +844,8 @@ levelplot(bathy,
           panel=function(...) {
             sp.polygons(test, fill = "grey40", col = NA)
             panel.levelplot(...)
-          }) 
-
-levelplot(bathy,
-          margin = FALSE,
-          col.regions = c(rep("transparent", 50),
-             terrain.colors(50)),
-          at = s3,
-          color.key = FALSE,
-          panel = function(...) {
-               lapply(k50_sp,
-             sp.polygons,
-             col = NA,
-             fill = "#8b2a0072")
-               panel.levelplot(...)
           })
+
 # plot(bathy,
 #      col = c(rep("transparent", 50),
 #              terrain.colors(50)),
@@ -871,13 +858,13 @@ lat_max <- 30
 
 lon_min <- 20
 lon_max <- 130
-png("C:/Users/ccjuhasz/Desktop/ISOSCAPES_K50_global2.png",
-    width = 1600,
-    height = 1000,
-    units = "px",
-    pointsize = 12,
-    bg = "white",
-    res = 100)
+# png("C:/Users/ccjuhasz/Desktop/ISOSCAPES_K50_global2.png",
+#     width = 1600,
+#     height = 1000,
+#     units = "px",
+#     pointsize = 12,
+#     bg = "white",
+#     res = 100)
 
 par(mai = c(1, 1, 0.8, 0.8))
 # maps::map("world",
