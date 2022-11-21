@@ -150,3 +150,51 @@ levelplot(bathy,
           })
 
 dev.off()
+
+# diminution de l'emprise (taille de la carte)
+
+new_ext2 <- extent(20, 130, -40, 30 ) #extent(xmin, xmax, ymin, ymax)
+sst_dec <- crop(x = sst,
+                y = new_ext2)
+bathy_dec <- crop(x = bathy,
+                  y = new_ext2)
+
+nlev <- 200
+my_at <- seq(from = min(values(sst_dec), na.rm = T),
+             to = max(values(sst_dec), na.rm = T),
+             length.out = nlev + 1)
+my_cols <- viridis_pal(option = "H", direction = 1)(nlev)
+levelplot(sst_dec,
+          margin = FALSE,
+          at = my_at,
+          col.regions = my_cols)
+
+png("C:/Users/ccjuhasz/Desktop/ISOSCAPE_maps/ISOSCAPES_K50_global_sst_dec.png",
+    width = 1600,
+    height = 1000,
+    units = "px",
+    pointsize = 12,
+    bg = "white",
+    res = 200)
+
+levelplot(sst_dec,
+          margin = FALSE,
+          color.key = FALSE,
+          at = my_at,
+          col.regions = my_cols) +
+levelplot(bathy_dec,
+          margin = FALSE,
+          col.regions = c(rep("transparent", 50),
+                          rep("white", 50)),
+          at = s3,
+          color.key = FALSE,
+          panel = function(...) {
+               lapply(k50_sp,
+                      sp.polygons,
+                      col = "black",
+                      fill = "#423c3a72")
+               sp.points(iso_sp, col = "black")               
+               panel.levelplot(...)
+          })
+
+dev.off()
