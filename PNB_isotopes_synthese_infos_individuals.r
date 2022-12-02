@@ -95,3 +95,6 @@ final_df <- left_join(range_lat_lon_df,
 final_df <- final_df[, c(5:10, 1:4)]
 final_df <- final_df[order(final_df$min_date), ]
 final_df$dist_trav <- as.numeric(final_df$dist_trav)
+
+# saveRDS(final_df,
+#         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/ISOSCAPE_synthese_par_ind.rds")
