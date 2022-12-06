@@ -56,7 +56,7 @@ pnb_sp_utm <- as(pnb_sf_utm,
 pnb_sf_utm_list <- split(pnb_sf_utm,
                          pnb_sf_utm$ID)
 
-#### Range of dates for each tracks ####
+#### Range of dates, duree de mig, travelled istance for each tracks ####
 range_mig <- lapply(pnb_sf_utm_list,
                     function(x) {
                         min_date <- range(x$DATE)[1]
@@ -76,6 +76,42 @@ range_mig_df <- do.call("rbind",
                         range_mig)
 range_mig_df$ID <- row.names(range_mig_df)
 
+#### Distance to the colony for each track ####
+
+addon <- data.frame(LAT = lat_col,
+                    LON = lon_col)
+
+ll <- split(pnb_trip, pnb_trip$ID)
+
+obs1 <- lapply(ll, function(x) {
+    x <- plyr::rbind.fill(addon,
+                          x)
+})
+
+obs11 <- do.call("rbind", obs1)
+head(obs11)
+
+pnb_all_sf <- st_as_sf(obs11,
+                   coords = c("LON", "LAT"),
+                   crs = projLatLon)
+pnb_all_sf_utm <- st_transform(pnb_all_sf,
+                           crs = 32743)
+
+lll <- split(pnb_all_sf_utm,
+             pnb_all_sf_utm$ID)
+
+col_dist <- lapply(lll,
+                   function(x) {
+                       mat <- st_distance(x)
+                       diago <- diag(mat[, -1])
+                       col_dist <- max(diago)/1000 # distance in km
+                   })
+col_dist <- as.data.frame(do.call("rbind", col_dist),
+                          row.names = F)
+col_dist$ID <- names(lll)
+names(col_dist)[1] <- "col_dist"
+
+#### Range in lat lon for each track ####
 range_lat_lon <- lapply(split(pnb_mig, pnb_mig$ID),
                     function(x) {
                         lat <- range(x$LAT)
@@ -88,13 +124,43 @@ range_lat_lon <- lapply(split(pnb_mig, pnb_mig$ID),
 range_lat_lon_df <- do.call("rbind", range_lat_lon)
 range_lat_lon_df$ID <- row.names(range_lat_lon_df)
 
-final_df <- left_join(range_lat_lon_df,
-                      range_mig_df,
-                      by = "ID")
+final_df_0 <- left_join(range_lat_lon_df,
+                        range_mig_df,
+                        by = "ID")
+final_df_1 <- left_join(final_df_0,
+                        col_dist,
+                        by = "ID")
 
-final_df <- final_df[, c(5:10, 1:4)]
-final_df <- final_df[order(final_df$min_date), ]
-final_df$dist_trav <- as.numeric(final_df$dist_trav)
 
-# saveRDS(final_df,
+final_df_1 <- final_df_1[, c(5:7, 10, 8, 9, 11, 1:4)]
+final_df_1 <- final_df_1[order(final_df$min_date), ]
+final_df_1$dist_trav <- as.numeric(final_df_1$dist_trav)
+
+# saveRDS(final_df_1,
 #         "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/ISOSCAPE_synthese_par_ind.rds")
+
+inf <- readRDS("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/GitHub_Pages/ISOSCAPE_synthese_par_ind.rds")
+inf
+year(inf$min_date)
+mean(inf$mig_day[year(inf$min_date) == 2018])
+sd(inf$mig_day[year(inf$min_date) == 2018])
+
+mean(inf$mig_day[year(inf$min_date) == 2019])
+sd(inf$mig_day[year(inf$min_date) == 2019])
+
+max(inf$dist_trav[year(inf$min_date) == 2018])
+max(inf$dist_trav[year(inf$min_date) == 2019])
+
+max(inf$col_dist[year(inf$min_date) == 2018])
+max(inf$col_dist[year(inf$min_date) == 2019])
+
+
+max(inf$max_lat[year(inf$min_date) == 2018])
+min(inf$min_lat[year(inf$min_date) == 2018])
+max(inf$max_lon[year(inf$min_date) == 2018])
+min(inf$min_lon[year(inf$min_date) == 2018])
+
+max(inf$max_lat[year(inf$min_date) == 2019])
+min(inf$min_lat[year(inf$min_date) == 2019])
+max(inf$max_lon[year(inf$min_date) == 2019])
+min(inf$min_lon[year(inf$min_date) == 2019])

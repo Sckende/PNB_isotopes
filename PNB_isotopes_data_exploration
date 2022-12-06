@@ -1004,3 +1004,9 @@ apply(mini_meta,
                  col = "red",
                  lty = 4)           
       })
+
+#### EXTRA ####
+ mig_list <- split(pnb_mig, year(pnb_mig$DATE))
+ 
+ lapply(mig_list, summary)
+ 
