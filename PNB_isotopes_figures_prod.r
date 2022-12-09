@@ -27,11 +27,13 @@ png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSC
     unit = "cm",
     bg = "white")
 
+# x11()
 plot(iso$CENTRO_LAT,
      iso$d13C_MEAN,
-     xlab = "Latitude (°)",
+     xlab = "Latitude of centroids (°)",
      ylab = "Mean d13C (per mil)",
-     ylim = c(min(iso$d13C_MEAN - iso$d13C_SD, na.rm = T), max(iso$d13C_MEAN + iso$d13C_SD, na.rm = T)),
+     ylim = c(min(iso$d13C_MEAN - iso$d13C_SD, na.rm = T),
+              max(iso$d13C_MEAN + iso$d13C_SD, na.rm = T)),
      cex.axis = 1.5,
      cex.lab = 1.5,
     #  bty = "n",
@@ -57,11 +59,13 @@ lines(glob_pred_lat$lat,
       lwd = 2)
 
 summary(models_lat[[2]])
-text(x = -29,
-     y = -15.4,
-     labels = "n = 22\nR2 = 0.1637; F(1, 20) = 3.916\nP = 0.06",
-     adj = c(0, 0),
-     cex = 1.5)
+legend("topleft",
+       legend = c("n = 22",
+               expression(R^2 == 0.163),
+               expression(F[1]^2 == 3.916),
+               "P = 0.06"),
+       bty = "n",
+       cex = 1.5)
 
 dev.off()
 
@@ -75,7 +79,7 @@ png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSC
     bg = "white")
 plot(iso$CENTRO_LAT,
      iso$d15N_MEAN,
-     xlab = "Latitude (°)",
+     xlab = "Latitude of centroids (°)",
      ylab = "Mean d15N (per mil)",
     #  bty = "n",
      ylim = c(min(iso$d15N_MEAN - iso$d15N_SD, na.rm = T),
@@ -104,11 +108,13 @@ lines(glob_pred_lat$lat,
       lwd = 2)
 
 summary(models_lat[[3]])
-text(x = -29,
-     y = 12.3,
-     labels = "n = 22\nR2 = 0.0004907; F(1, 20) = 0.009818\nP = 0.9",
-     adj = c(0, 0),
-     cex = 1.5)
+legend("topleft",
+       legend = c("n = 22",
+               expression(R^2 == 0.0004907),
+               expression(F[1]^2 == 0.009818),
+               "P = 0.9"),
+       bty = "n",
+       cex = 1.5)
 
 dev.off()
 
@@ -123,8 +129,8 @@ png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSC
 
 plot(iso$CENTRO_LAT,
      iso$HG_MEAN,
-     xlab = "Latitude",
-     ylab = "Mean Hg",
+     xlab = "Latitude of centroids (°)",
+     ylab = "Mean feather Hg (µg.g-1)",
     #  bty = "n",
      ylim = c(min(iso$HG_MEAN - iso$HG_SD, na.rm = T),
               max(iso$HG_MEAN + iso$HG_SD, na.rm = T)),
@@ -153,11 +159,13 @@ lines(glob_pred_lat$lat,
       lwd = 2)
 
 summary(models_lat[[1]])
-text(x = -29,
-     y = 4,
-     labels = "n = 22\nR2 = 0.5278; F(1, 20) = 22.36\nP < 0.001",
-     adj = c(0, 0),
-     cex = 1.5)
+legend("bottomleft",
+       legend = c("n = 22",
+               expression(R^2 == 0.5278),
+               expression(F[1]^2 == 22.36),
+               "P < 0.001"),
+       bty = "n",
+       cex = 1.5)
 
 dev.off()
 
@@ -175,8 +183,8 @@ plot(x = iso$CENTRO_LAT,
      xlim = c(min(iso$CENTRO_LAT), max(iso$CENTRO_LAT)),
      ylim = c(min(iso$SST_MEAN - iso$SST_SD), max(iso$SST_MEAN + iso$SST_SD)),
     #  bty = "n",
-     ylab = "SST (°C)",
-     xlab = "Centroid latitude (°)",
+     ylab = "Mean SST per kernel (°C)",
+     xlab = "Latitude of centroids (°)",
      cex.axis = 1.5,
      cex.lab = 1.5,
      pch = 19)
@@ -212,193 +220,226 @@ lines(pred_df$lat,
       lwd = 2)
 summary(mod)
 
-text(x = -29,
-     y = 29,
-     labels = "n = 22\nR2 = 0.5793; F(1, 20) = 27.54\nP < 0.0001",
-     adj = c(0, 0),
-     cex = 1.5)
+legend("topleft",
+       legend = c("n = 22",
+               expression(R^2 == 0.5793),
+               expression(F[1]^2 == 27.54),
+               "P < 0.0001"),
+       bty = "n",
+       cex = 1.5)
 dev.off()
 
-#### LONGITUDE #### REPRENDRE ICI ****
+#### LONGITUDE ####
 # C
+png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_C_vs_LON.png",
+    res = 300,
+    width = 50,
+    height = 50,
+    pointsize = 24,
+    unit = "cm",
+    bg = "white")
+# x11()
 plot(iso$CENTRO_LON,
      iso$d13C_MEAN,
-     xlab = "Longitude",
-     ylab = "Mean d13C",
-     bty = "n")
+     xlab = "Longitude of centroids (°)",
+     ylab = "Mean d13C (per mil)",
+     ylim = c(min(iso$d13C_MEAN - iso$d13C_SD, na.rm = T), max(iso$d13C_MEAN + iso$d13C_SD, na.rm = T)),
+     cex.axis = 1.5,
+     cex.lab = 1.5,
+    #  bty = "n",
+     pch = 19)
+segments(x0 = iso$CENTRO_LON,
+         y0 = iso$d13C_MEAN + iso$d13C_SD,
+         x1 = iso$CENTRO_LON,
+         y1 = iso$d13C_MEAN - iso$d13C_SD)
 
 lines(glob_pred_lon$lon,
       glob_pred_lon$fit_13c,
-      col = "red")
+      col = "red",
+      lwd = 2)
 lines(glob_pred_lon$lon,
       glob_pred_lon$fit_13c - glob_pred_lon$se_fit_13c,
       col = "red",
-      lty = 4)
+      lty = 4,
+      lwd = 2)
 lines(glob_pred_lon$lon,
       glob_pred_lon$fit_13c + glob_pred_lon$se_fit_13c,
       col = "red",
-      lty = 4)
-
-mod_gam <- mgcv::gam(iso$d13C_MEAN ~ s(iso$CENTRO_LON))
-pred_mod_gam <- predict(mod_gam,
-                        se.fit = TRUE)
-pred_df <- data.frame(x = iso$CENTRO_LON,
-                      fit_gam = pred_mod_gam$fit,
-                      se_fit_gam = pred_mod_gam$se.fit)
-pred_df <- pred_df[order(pred_df$x), ]
-
-lines(pred_df$x,
-      pred_df$fit_gam,
-      col = "darkblue")
-lines(pred_df$x,
-      pred_df$fit_gam - pred_df$se_fit_gam,
-      col = "darkblue",
-      lty = 4)
-lines(pred_df$x,
-      pred_df$fit_gam + pred_df$se_fit_gam,
-      col = "darkblue",
-      lty = 4)
+      lty = 4,
+      lwd = 2)
 
 summary(models_lon[[2]])
+legend("topright",
+       legend = c("n = 22",
+               expression(R^2 == 0.0003847),
+               expression(F[1]^2 == 0.007696),
+               "P = 0.931"),
+       bty = "n",
+       cex = 1.5)
+
+dev.off()
 
 # N
+png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_N_vs_LON.png",
+    res = 300,
+    width = 50,
+    height = 50,
+    pointsize = 24,
+    unit = "cm",
+    bg = "white")
+
+# x11()
 plot(iso$CENTRO_LON,
      iso$d15N_MEAN,
-     xlab = "longitude",
-     ylab = "Mean d15N",
-     bty = "n")
+     xlab = "Longitude of centroids (°)",
+     ylab = "Mean d15N (per mil)",
+    #  bty = "n",
+     ylim = c(min(iso$d15N_MEAN - iso$d15N_SD, na.rm = T),
+              max(iso$d15N_MEAN + iso$d15N_SD, na.rm = T)),
+     cex.axis = 1.5,
+     cex.lab = 1.5,
+     pch = 19)
+segments(x0 = iso$CENTRO_LON,
+         y0 = iso$d15N_MEAN + iso$d15N_SD,
+         x1 = iso$CENTRO_LON,
+         y1 = iso$d15N_MEAN - iso$d15N_SD)
 
 lines(glob_pred_lon$lon,
       glob_pred_lon$fit_15n,
-      col = "red")
+      col = "red",
+      lwd = 2)
 lines(glob_pred_lon$lon,
       glob_pred_lon$fit_15n - glob_pred_lon$se_fit_15n,
       col = "red",
-      lty = 4)
+      lty = 4,
+      lwd = 2)
 lines(glob_pred_lon$lon,
       glob_pred_lon$fit_15n + glob_pred_lon$se_fit_15n,
       col = "red",
-      lty = 4)
-
-mod_gam <- mgcv::gam(iso$d15N_MEAN ~ s(iso$CENTRO_LON))
-pred_mod_gam <- predict(mod_gam,
-                        se.fit = TRUE)
-pred_df <- data.frame(x = iso$CENTRO_LON,
-                      fit_gam = pred_mod_gam$fit,
-                      se_fit_gam = pred_mod_gam$se.fit)
-pred_df <- pred_df[order(pred_df$x), ]
-
-lines(pred_df$x,
-      pred_df$fit_gam,
-      col = "darkblue")
-lines(pred_df$x,
-      pred_df$fit_gam - pred_df$se_fit_gam,
-      col = "darkblue",
-      lty = 4)
-lines(pred_df$x,
-      pred_df$fit_gam + pred_df$se_fit_gam,
-      col = "darkblue",
-      lty = 4)
+      lty = 4,
+      lwd = 2)
 
 summary(models_lon[[3]])
+legend("topright",
+       legend = c("n = 22",
+               expression(R^2 == 0.1154),
+               expression(F[1]^2 == 2.60),
+               "P = 0.1219"),
+       bty = "n",
+       cex = 1.5)
+
+dev.off()
 
 # Hg
+png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_Hg_vs_LON.png",
+    res = 300,
+    width = 50,
+    height = 50,
+    pointsize = 24,
+    unit = "cm",
+    bg = "white")
+
+# x11()
 plot(iso$CENTRO_LON,
      iso$HG_MEAN,
-     xlab = "Longitude",
-     ylab = "Mean Hg",
-     bty = "n")
+     xlab = "Longitude of centroids (°)",
+     ylab = "Mean feather Hg (µg.g-1)",
+    #  bty = "n",
+     ylim = c(min(iso$HG_MEAN - iso$HG_SD, na.rm = T),
+              max(iso$HG_MEAN + iso$HG_SD, na.rm = T)),
+     cex.axis = 1.5,
+     cex.lab = 1.5,
+     pch = 19)
+
+segments(x0 = iso$CENTRO_LON,
+         y0 = iso$HG_MEAN + iso$HG_SD,
+         x1 = iso$CENTRO_LON,
+         y1 = iso$HG_MEAN - iso$HG_SD)
 
 lines(glob_pred_lon$lon,
       glob_pred_lon$fit_hg,
-      col = "red")
+      col = "red",
+      lwd = 2)
 lines(glob_pred_lon$lon,
       glob_pred_lon$fit_hg - glob_pred_lon$se_fit_hg,
       col = "red",
-      lty = 4)
+      lty = 4,
+      lwd = 2)
 lines(glob_pred_lon$lon,
       glob_pred_lon$fit_hg + glob_pred_lon$se_fit_hg,
       col = "red",
-      lty = 4)
-
-mod_gam <- mgcv::gam(iso$HG_MEAN ~ s(iso$CENTRO_LON))
-pred_mod_gam <- predict(mod_gam,
-                        se.fit = TRUE)
-pred_df <- data.frame(x = iso$CENTRO_LON,
-                      fit_gam = pred_mod_gam$fit,
-                      se_fit_gam = pred_mod_gam$se.fit)
-pred_df <- pred_df[order(pred_df$x), ]
-
-lines(pred_df$x,
-      pred_df$fit_gam,
-      col = "darkblue")
-lines(pred_df$x,
-      pred_df$fit_gam - pred_df$se_fit_gam,
-      col = "darkblue",
-      lty = 4)
-lines(pred_df$x,
-      pred_df$fit_gam + pred_df$se_fit_gam,
-      col = "darkblue",
-      lty = 4)
+      lty = 4,
+      lwd = 2)
 
 summary(models_lon[[1]])
+legend("bottomright",
+       legend = c("n = 22",
+               expression(R^2 == 0.001605),
+               expression(F[1]^2 == 0.03215),
+               "P = 0.8595"),
+       bty = "n",
+       cex = 1.5)
+
+dev.off()
 
 # SST
+png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_SST_vs_LON.png",
+    res = 300,
+    width = 50,
+    height = 50,
+    pointsize = 24,
+    unit = "cm",
+    bg = "white")
+
+# x11()
 plot(x = iso$CENTRO_LON,
-                y = iso$SST_MEAN,
-                xlim = c(min(iso$CENTRO_LON), max(iso$CENTRO_LON)),
-                ylim = c(min(iso$SST_MEAN - iso$SST_SD), max(iso$SST_MEAN + iso$SST_SD)),
-                bty = "n",
-                ylab = "SST (°C)",
-                xlab = "Centroide longitude (°)",
-                cex = scales::rescale(as.numeric(iso$N_PIX), to = c(1, 5)))
-           segments(x0 = iso$CENTRO_LON,
-                    y0 = iso$SST_MEAN + iso$SST_SD,
-                    x1 = iso$CENTRO_LON,
-                    y1 = iso$SST_MEAN - iso$SST_SD)
-           
-           mod <- lm(iso$SST_MEAN ~ iso$CENTRO_LON)
-           
-           mod_gam <- mgcv::gam(iso$SST_MEAN ~ s(iso$CENTRO_LON))
+     y = iso$SST_MEAN,
+     xlim = c(min(iso$CENTRO_LON), max(iso$CENTRO_LON)),
+     ylim = c(min(iso$SST_MEAN - iso$SST_SD), max(iso$SST_MEAN + iso$SST_SD)),
+    #  bty = "n",
+     ylab = "Mean SST per kernel (°C)",
+     xlab = "Longitude of centroids (°)",
+     cex.axis = 1.5,
+     cex.lab = 1.5,
+     pch = 19)
 
-
-# Visualization
+segments(x0 = iso$CENTRO_LON,
+         y0 = iso$SST_MEAN + iso$SST_SD,
+         x1 = iso$CENTRO_LON,
+         y1 = iso$SST_MEAN - iso$SST_SD)
+           
+mod <- lm(iso$SST_MEAN ~ iso$CENTRO_LON)
 pred_mod <- predict.lm(mod,
-                    se.fit = TRUE)
-
-pred_mod_gam <- predict(mod_gam,
-                        se.fit = TRUE)
-pred_df <- data.frame(x = iso$CENTRO_LON,
+                       se.fit = TRUE)
+pred_df <- data.frame(lon = iso$CENTRO_LON,
                       fit_sst = pred_mod$fit,
-                      se_fit_sst = pred_mod$se.fit,
-                      fit_sst_gam = pred_mod_gam$fit,
-                      se_fit_sst_gam = pred_mod_gam$se.fit)
+                      se_fit_sst = pred_mod$se.fit)
+pred_df <- pred_df[order(pred_df$lon), ]
 
-pred_df <- pred_df[order(pred_df$x), ]
+####
 
-           lines(pred_df$x,
-                 pred_df$fit_sst,
-                 col = "red")
-           lines(pred_df$x,
-                 pred_df$fit_sst - pred_df$se_fit_sst,
-                 col = "red",
-                 lty = 4)
-           lines(pred_df$x,
-                 pred_df$fit_sst + pred_df$se_fit_sst,
-                 col = "red",
-                 lty = 4)
-           
-           
-          lines(pred_df$x,
-                pred_df$fit_sst_gam,
-                col = "darkblue")
-          lines(pred_df$x,
-                pred_df$fit_sst_gam - pred_df$se_fit_sst_gam,
-                col = "darkblue",
-                lty = 4)
-          lines(pred_df$x,
-                pred_df$fit_sst_gam + pred_df$se_fit_sst_gam,
-                col = "darkblue",
-                lty = 4)
-
+lines(pred_df$lon,
+      pred_df$fit_sst,
+      col = "red",
+      lwd = 2)
+lines(pred_df$lon,
+      pred_df$fit_sst - pred_df$se_fit_sst,
+      col = "red",
+      lty = 4,
+      lwd = 2)
+lines(pred_df$lon,
+      pred_df$fit_sst + pred_df$se_fit_sst,
+      col = "red",
+      lty = 4,
+      lwd = 2)
 summary(mod)
+
+legend("bottomright",
+       legend = c("n = 22",
+               expression(R^2 == 0.08686),
+               expression(F[1]^2 == 1.902),
+               "P = 0.183"),
+       bty = "n",
+       cex = 1.5)
+dev.off()
+# file.show("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_SST_vs_LON.png")
