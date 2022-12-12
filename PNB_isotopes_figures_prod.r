@@ -4,6 +4,7 @@ rm(list = ls())
 library(sf)
 library(mapview)
 library(maps)
+library(DHARMa)
 source("C:/Users/ccjuhasz/Desktop/SMAC/GITHUB/SMAC-ENTROPIE_tracking/PTEBAR-JUV/packages_list.r")
 
 iso <- read.table("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/DATA/PNB_ISOTOPES_locs_in_kernels_dates_SST_degre.txt",
@@ -19,13 +20,13 @@ glob_pred_lon <- readRDS("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isot
 
 #### LATITUDE ####
 # C
-png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_C_vs_LAT.png",
-    res = 300,
-    width = 50,
-    height = 50,
-    pointsize = 24,
-    unit = "cm",
-    bg = "white")
+# png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_C_vs_LAT.png",
+#     res = 300,
+#     width = 50,
+#     height = 50,
+#     pointsize = 24,
+#     unit = "cm",
+#     bg = "white")
 
 # x11()
 plot(iso$CENTRO_LAT,
@@ -67,7 +68,6 @@ hist(resid(models_lat[[2]]))
 plot(fitted(models_lat[[2]]), resid(models_lat[[2]]))
 
 # DHARMa
-library(DHARMa)
 testDispersion(models_lat[[2]])
 sim <- simulateResiduals(models_lat[[2]])
 plot(sim)
@@ -75,21 +75,21 @@ plot(sim)
 legend("topleft",
        legend = c("n = 22",
                expression(R^2 == 0.163),
-               expression(F[1]^2 == 3.916),
+               expression(F[20]^1 == 3.916),
                "P = 0.06"),
        bty = "n",
        cex = 1.5)
 
-dev.off()
+# dev.off()
 
 # N
-png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_N_vs_LAT.png",
-    res = 300,
-    width = 50,
-    height = 50,
-    pointsize = 24,
-    unit = "cm",
-    bg = "white")
+# png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_N_vs_LAT.png",
+#     res = 300,
+#     width = 50,
+#     height = 50,
+#     pointsize = 24,
+#     unit = "cm",
+#     bg = "white")
 plot(iso$CENTRO_LAT,
      iso$d15N_MEAN,
      xlab = "Latitude of centroids (°)",
@@ -129,7 +129,6 @@ hist(resid(models_lat[[3]]))
 plot(fitted(models_lat[[3]]), resid(models_lat[[3]]))
 
 # DHARMa
-library(DHARMa)
 testDispersion(models_lat[[3]])
 sim <- simulateResiduals(models_lat[[3]])
 plot(sim)
@@ -137,21 +136,21 @@ plot(sim)
 legend("topleft",
        legend = c("n = 22",
                expression(R^2 == 0.0004907),
-               expression(F[1]^2 == 0.009818),
+               expression(F[20]^1 == 0.009818),
                "P = 0.9"),
        bty = "n",
        cex = 1.5)
 
-dev.off()
+# dev.off()
 
 # Hg
-png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_Hg_vs_LAT.png",
-    res = 300,
-    width = 50,
-    height = 50,
-    pointsize = 24,
-    unit = "cm",
-    bg = "white")
+# png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_Hg_vs_LAT.png",
+#     res = 300,
+#     width = 50,
+#     height = 50,
+#     pointsize = 24,
+#     unit = "cm",
+#     bg = "white")
 
 plot(iso$CENTRO_LAT,
      iso$HG_MEAN,
@@ -193,7 +192,6 @@ hist(resid(models_lat[[1]]))
 plot(fitted(models_lat[[1]]), resid(models_lat[[1]]))
 
 # DHARMa
-library(DHARMa)
 testDispersion(models_lat[[1]])
 sim <- simulateResiduals(models_lat[[1]])
 plot(sim)
@@ -202,21 +200,23 @@ plot(sim)
 legend("bottomleft",
        legend = c("n = 22",
                expression(R^2 == 0.5278),
-               expression(F[1]^2 == 22.36),
+               expression(F[20]^1 == 22.36),
                "P < 0.001"),
        bty = "n",
        cex = 1.5)
 
-dev.off()
+# dev.off()
 
 # SST
-png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_SST_vs_LAT.png",
-    res = 300,
-    width = 50,
-    height = 50,
-    pointsize = 24,
-    unit = "cm",
-    bg = "white")
+# png(
+#       "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_SST_vs_LAT.png",
+#       # "C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_SST_vs_LAT_QUADRA.png",
+#     res = 300,
+#     width = 50,
+#     height = 50,
+#     pointsize = 24,
+#     unit = "cm",
+#     bg = "white")
 
 plot(x = iso$CENTRO_LAT,
      y = iso$SST_MEAN,
@@ -276,7 +276,6 @@ plot(mod111)
 
 
 # DHARMa
-library(DHARMa)
 testDispersion(mod)
 sim <- simulateResiduals(mod1)
 plot(sim)
@@ -288,21 +287,29 @@ plot(sim)
 legend("topleft",
        legend = c("n = 22",
                expression(R^2 == 0.5793),
-               expression(F[1]^2 == 27.54),
+               expression(F[20]^1 == 27.54),
                "P < 0.0001"),
        bty = "n",
        cex = 1.5)
-dev.off()
+summary(mod11)
+legend("topleft",
+       legend = c("n = 22",
+               expression(R^2 == 0.786),
+               expression(F[19]^2 == 34.9),
+               "P < 0.0001"),
+       bty = "n",
+       cex = 1.5)
+# dev.off()
 
 #### LONGITUDE ####
 # C
-png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_C_vs_LON.png",
-    res = 300,
-    width = 50,
-    height = 50,
-    pointsize = 24,
-    unit = "cm",
-    bg = "white")
+# png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_C_vs_LON.png",
+#     res = 300,
+#     width = 50,
+#     height = 50,
+#     pointsize = 24,
+#     unit = "cm",
+#     bg = "white")
 # x11()
 plot(iso$CENTRO_LON,
      iso$d13C_MEAN,
@@ -342,7 +349,6 @@ hist(resid(models_lon[[2]]))
 plot(fitted(models_lon[[2]]), resid(models_lon[[2]]))
 
 # DHARMa
-library(DHARMa)
 testDispersion(models_lon[[2]])
 sim <- simulateResiduals(models_lon[[2]])
 plot(sim)
@@ -350,21 +356,21 @@ plot(sim)
 legend("topright",
        legend = c("n = 22",
                expression(R^2 == 0.0003847),
-               expression(F[1]^2 == 0.007696),
+               expression(F[20]^1 == 0.007696),
                "P = 0.931"),
        bty = "n",
        cex = 1.5)
 
-dev.off()
+# dev.off()
 
 # N
-png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_N_vs_LON.png",
-    res = 300,
-    width = 50,
-    height = 50,
-    pointsize = 24,
-    unit = "cm",
-    bg = "white")
+# png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_N_vs_LON.png",
+#     res = 300,
+#     width = 50,
+#     height = 50,
+#     pointsize = 24,
+#     unit = "cm",
+#     bg = "white")
 
 # x11()
 plot(iso$CENTRO_LON,
@@ -406,7 +412,6 @@ hist(resid(models_lon[[3]]))
 plot(fitted(models_lon[[3]]), resid(models_lon[[3]]))
 
 # DHARMa
-library(DHARMa)
 testDispersion(models_lon[[3]])
 sim <- simulateResiduals(models_lon[[3]])
 plot(sim)
@@ -414,21 +419,21 @@ plot(sim)
 legend("topright",
        legend = c("n = 22",
                expression(R^2 == 0.1154),
-               expression(F[1]^2 == 2.60),
+               expression(F[20]^1 == 2.60),
                "P = 0.1219"),
        bty = "n",
        cex = 1.5)
 
-dev.off()
+# dev.off()
 
 # Hg
-png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_Hg_vs_LON.png",
-    res = 300,
-    width = 50,
-    height = 50,
-    pointsize = 24,
-    unit = "cm",
-    bg = "white")
+# png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_Hg_vs_LON.png",
+#     res = 300,
+#     width = 50,
+#     height = 50,
+#     pointsize = 24,
+#     unit = "cm",
+#     bg = "white")
 
 # x11()
 plot(iso$CENTRO_LON,
@@ -471,7 +476,6 @@ hist(resid(models_lon[[1]]))
 plot(fitted(models_lon[[1]]), resid(models_lon[[1]]))
 
 # DHARMa
-library(DHARMa)
 testDispersion(models_lon[[1]])
 sim <- simulateResiduals(models_lon[[1]])
 plot(sim)
@@ -479,21 +483,21 @@ plot(sim)
 legend("bottomright",
        legend = c("n = 22",
                expression(R^2 == 0.001605),
-               expression(F[1]^2 == 0.03215),
+               expression(F[20]^1 == 0.03215),
                "P = 0.8595"),
        bty = "n",
        cex = 1.5)
 
-dev.off()
+# dev.off()
 
 # SST
-png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_SST_vs_LON.png",
-    res = 300,
-    width = 50,
-    height = 50,
-    pointsize = 24,
-    unit = "cm",
-    bg = "white")
+# png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_SST_vs_LON.png",
+#     res = 300,
+#     width = 50,
+#     height = 50,
+#     pointsize = 24,
+#     unit = "cm",
+#     bg = "white")
 
 # x11()
 plot(x = iso$CENTRO_LON,
@@ -551,7 +555,6 @@ plot(mod22)
 
 
 # DHARMa
-library(DHARMa)
 testDispersion(mod2)
 sim <- simulateResiduals(mod2)
 plot(sim)
@@ -559,9 +562,9 @@ plot(sim)
 legend("bottomright",
        legend = c("n = 22",
                expression(R^2 == 0.08686),
-               expression(F[1]^2 == 1.902),
+               expression(F[20]^1 == 1.902),
                "P = 0.183"),
        bty = "n",
        cex = 1.5)
-dev.off()
+# dev.off()
 # file.show("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_SST_vs_LON.png")
