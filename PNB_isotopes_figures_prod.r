@@ -552,8 +552,8 @@ plot(mod22)
 
 # DHARMa
 library(DHARMa)
-testDispersion(mod)
-sim <- simulateResiduals(mod)
+testDispersion(mod2)
+sim <- simulateResiduals(mod2)
 plot(sim)
 
 legend("bottomright",
