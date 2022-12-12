@@ -266,7 +266,19 @@ plot(mod1)
 hist(resid(mod1))
 plot(fitted(mod1), resid(mod1))
 
-mod11 <- lm(iso$SST_MEAN ~ poly(iso$CENTRO_LAT, 2))
+# similar method for a quadratic effect
+mod11 <- lm(SST_MEAN ~ poly(CENTRO_LAT, 2, raw = T), data = iso)
+ND <- data.frame(CENTRO_LAT = -100:100)
+prediction <- predict.lm(mod11,
+                         se.fit = T,
+                         newdata = ND)
+preddd <- data.frame(lat = ND,
+                     deg = prediction$fit)
+preddd[preddd$deg == max(preddd$deg), ]
+
+mod11b <- lm(iso$SST_MEAN ~ iso$CENTRO_LAT + I(iso$CENTRO_LAT^2))
+
+
 mod111 <- mgcv::gam(iso$SST_MEAN ~ s(iso$CENTRO_LAT))
 x11(); par(mfrow = c(2, 2))
 plot(mod11)
