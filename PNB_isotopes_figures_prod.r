@@ -59,6 +59,19 @@ lines(glob_pred_lat$lat,
       lwd = 2)
 
 summary(models_lat[[2]])
+
+# Visual verification 
+x11(); par(mfrow = c(2, 2))
+plot(models_lat[[2]])
+hist(resid(models_lat[[2]]))
+plot(fitted(models_lat[[2]]), resid(models_lat[[2]]))
+
+# DHARMa
+library(DHARMa)
+testDispersion(models_lat[[2]])
+sim <- simulateResiduals(models_lat[[2]])
+plot(sim)
+
 legend("topleft",
        legend = c("n = 22",
                expression(R^2 == 0.163),
@@ -108,6 +121,19 @@ lines(glob_pred_lat$lat,
       lwd = 2)
 
 summary(models_lat[[3]])
+
+# Visual verification 
+x11(); par(mfrow = c(2, 2))
+plot(models_lat[[3]])
+hist(resid(models_lat[[3]]))
+plot(fitted(models_lat[[3]]), resid(models_lat[[3]]))
+
+# DHARMa
+library(DHARMa)
+testDispersion(models_lat[[3]])
+sim <- simulateResiduals(models_lat[[3]])
+plot(sim)
+
 legend("topleft",
        legend = c("n = 22",
                expression(R^2 == 0.0004907),
@@ -159,6 +185,20 @@ lines(glob_pred_lat$lat,
       lwd = 2)
 
 summary(models_lat[[1]])
+
+# Visual verification 
+x11(); par(mfrow = c(2, 2))
+plot(models_lat[[1]])
+hist(resid(models_lat[[1]]))
+plot(fitted(models_lat[[1]]), resid(models_lat[[1]]))
+
+# DHARMa
+library(DHARMa)
+testDispersion(models_lat[[1]])
+sim <- simulateResiduals(models_lat[[1]])
+plot(sim)
+
+
 legend("bottomleft",
        legend = c("n = 22",
                expression(R^2 == 0.5278),
@@ -194,8 +234,8 @@ segments(x0 = iso$CENTRO_LAT,
          x1 = iso$CENTRO_LAT,
          y1 = iso$SST_MEAN - iso$SST_SD)
            
-mod <- lm(iso$SST_MEAN ~ iso$CENTRO_LAT)
-pred_mod <- predict.lm(mod,
+mod1 <- lm(iso$SST_MEAN ~ iso$CENTRO_LAT)
+pred_mod <- predict.lm(mod1,
                        se.fit = TRUE)
 pred_df <- data.frame(lat = iso$CENTRO_LAT,
                       fit_sst = pred_mod$fit,
@@ -219,6 +259,31 @@ lines(pred_df$lat,
       lty = 4,
       lwd = 2)
 summary(mod)
+
+# Visual verification 
+x11(); par(mfrow = c(2, 2))
+plot(mod1)
+hist(resid(mod1))
+plot(fitted(mod1), resid(mod1))
+
+mod11 <- lm(iso$SST_MEAN ~ poly(iso$CENTRO_LAT, 2))
+mod111 <- mgcv::gam(iso$SST_MEAN ~ s(iso$CENTRO_LAT))
+x11(); par(mfrow = c(2, 2))
+plot(mod11)
+
+x11(); par(mfrow = c(2, 2))
+plot(mod111)
+
+
+# DHARMa
+library(DHARMa)
+testDispersion(mod)
+sim <- simulateResiduals(mod1)
+plot(sim)
+sim <- simulateResiduals(mod11)
+plot(sim)
+sim <- simulateResiduals(mod111)
+plot(sim)
 
 legend("topleft",
        legend = c("n = 22",
@@ -269,6 +334,19 @@ lines(glob_pred_lon$lon,
       lwd = 2)
 
 summary(models_lon[[2]])
+
+# Visual verification 
+x11(); par(mfrow = c(2, 2))
+plot(models_lon[[2]])
+hist(resid(models_lon[[2]]))
+plot(fitted(models_lon[[2]]), resid(models_lon[[2]]))
+
+# DHARMa
+library(DHARMa)
+testDispersion(models_lon[[2]])
+sim <- simulateResiduals(models_lon[[2]])
+plot(sim)
+
 legend("topright",
        legend = c("n = 22",
                expression(R^2 == 0.0003847),
@@ -320,6 +398,19 @@ lines(glob_pred_lon$lon,
       lwd = 2)
 
 summary(models_lon[[3]])
+
+# Visual verification 
+x11(); par(mfrow = c(2, 2))
+plot(models_lon[[3]])
+hist(resid(models_lon[[3]]))
+plot(fitted(models_lon[[3]]), resid(models_lon[[3]]))
+
+# DHARMa
+library(DHARMa)
+testDispersion(models_lon[[3]])
+sim <- simulateResiduals(models_lon[[3]])
+plot(sim)
+
 legend("topright",
        legend = c("n = 22",
                expression(R^2 == 0.1154),
@@ -372,6 +463,19 @@ lines(glob_pred_lon$lon,
       lwd = 2)
 
 summary(models_lon[[1]])
+
+# Visual verification 
+x11(); par(mfrow = c(2, 2))
+plot(models_lon[[1]])
+hist(resid(models_lon[[1]]))
+plot(fitted(models_lon[[1]]), resid(models_lon[[1]]))
+
+# DHARMa
+library(DHARMa)
+testDispersion(models_lon[[1]])
+sim <- simulateResiduals(models_lon[[1]])
+plot(sim)
+
 legend("bottomright",
        legend = c("n = 22",
                expression(R^2 == 0.001605),
@@ -408,8 +512,8 @@ segments(x0 = iso$CENTRO_LON,
          x1 = iso$CENTRO_LON,
          y1 = iso$SST_MEAN - iso$SST_SD)
            
-mod <- lm(iso$SST_MEAN ~ iso$CENTRO_LON)
-pred_mod <- predict.lm(mod,
+mod2 <- lm(iso$SST_MEAN ~ iso$CENTRO_LON)
+pred_mod <- predict.lm(mod2,
                        se.fit = TRUE)
 pred_df <- data.frame(lon = iso$CENTRO_LON,
                       fit_sst = pred_mod$fit,
@@ -432,7 +536,25 @@ lines(pred_df$lon,
       col = "red",
       lty = 4,
       lwd = 2)
-summary(mod)
+summary(mod2)
+
+# Visual verification 
+x11(); par(mfrow = c(2, 2))
+plot(mod2)
+hist(resid(mod2))
+plot(fitted(mod2), resid(mod2))
+
+
+mod22 <- lm(iso$SST_MEAN ~ poly(iso$CENTRO_LON, 2))
+x11(); par(mfrow = c(2, 2))
+plot(mod22)
+
+
+# DHARMa
+library(DHARMa)
+testDispersion(mod)
+sim <- simulateResiduals(mod)
+plot(sim)
 
 legend("bottomright",
        legend = c("n = 22",
