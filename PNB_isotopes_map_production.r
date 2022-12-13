@@ -78,7 +78,7 @@ levelplot(bathy,
 
 dev.off()
 #### kernel map with bathy background ####
-# png("C:/Users/ccjuhasz/Desktop/ISOSCAPE_maps/ISOSCAPES_K50_global_bathyBG2.png",
+# png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_maps/ISOSCAPES_K50_global_bathyBG3.png",
 #     width = 1600,
 #     height = 1000,
 #     units = "px",
@@ -101,8 +101,8 @@ levelplot(bathy,
           panel = function(...) {
                lapply(k50_sp,
                       sp.polygons,
-                      col = NA,
-                      fill = "#8b2a0072")
+                      col = "black",
+                      fill = "#423c3a51")
                sp.points(iso_sp, col = "black")               
                panel.levelplot(...)
           })
@@ -121,14 +121,15 @@ levelplot(sst, margin = FALSE,
           at = my_at,
           col.regions = my_cols)
 
-png("C:/Users/ccjuhasz/Desktop/ISOSCAPE_maps/ISOSCAPES_K50_global_sstBG5.png",
-    width = 1600,
-    height = 1000,
-    units = "px",
-    pointsize = 12,
-    bg = "white",
-    res = 200)
+# png("C:/Users/ccjuhasz/Desktop/ISOSCAPE_maps/ISOSCAPES_K50_global_sstBG5.png",
+#     width = 1600,
+#     height = 1000,
+#     units = "px",
+#     pointsize = 12,
+#     bg = "white",
+#     res = 200)
 
+x11()
 levelplot(sst_crop,
           margin = FALSE,
           color.key = FALSE,
@@ -164,18 +165,20 @@ my_at <- seq(from = min(values(sst_dec), na.rm = T),
              to = max(values(sst_dec), na.rm = T),
              length.out = nlev + 1)
 my_cols <- viridis_pal(option = "H", direction = 1)(nlev)
+
+x11()
 levelplot(sst_dec,
           margin = FALSE,
           at = my_at,
           col.regions = my_cols)
 
-png("C:/Users/ccjuhasz/Desktop/ISOSCAPE_maps/ISOSCAPES_K50_global_sst_dec.png",
-    width = 1600,
-    height = 1000,
-    units = "px",
-    pointsize = 12,
-    bg = "white",
-    res = 200)
+# png("C:/Users/ccjuhasz/Desktop/ISOSCAPE_maps/ISOSCAPES_K50_global_sst_dec.png",
+#     width = 1600,
+#     height = 1000,
+#     units = "px",
+#     pointsize = 12,
+#     bg = "white",
+#     res = 200)
 
 levelplot(sst_dec,
           margin = FALSE,
