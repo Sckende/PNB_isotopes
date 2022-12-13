@@ -217,7 +217,7 @@ legend("bottomleft",
 #     pointsize = 24,
 #     unit = "cm",
 #     bg = "white")
-
+x11()
 plot(x = iso$CENTRO_LAT,
      y = iso$SST_MEAN,
      xlim = c(min(iso$CENTRO_LAT), max(iso$CENTRO_LAT)),
@@ -503,7 +503,7 @@ legend("bottomright",
 # dev.off()
 
 # SST
-# png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_SST_vs_LON.png",
+# png("C:/Users/ccjuhasz/Desktop/SMAC/Projet_publi/6-PNB_isotopes/Figures_ms/ISOSCAPE_plots/ISOSCAPE_SST_vs_LON_QUADRA.png",
 #     res = 300,
 #     width = 50,
 #     height = 50,
@@ -538,17 +538,17 @@ pred_df <- pred_df[order(pred_df$lon), ]
 
 ####
 
-lines(pred_df$lon,
-      pred_df$fit_sst,
+lines(preddd$lon,
+      preddd$fit_sst,
       col = "red",
       lwd = 2)
-lines(pred_df$lon,
-      pred_df$fit_sst - pred_df$se_fit_sst,
+lines(preddd$lon,
+      preddd$fit_sst - preddd$se_fit_sst,
       col = "red",
       lty = 4,
       lwd = 2)
-lines(pred_df$lon,
-      pred_df$fit_sst + pred_df$se_fit_sst,
+lines(preddd$lon,
+      preddd$fit_sst + preddd$se_fit_sst,
       col = "red",
       lty = 4,
       lwd = 2)
@@ -559,6 +559,22 @@ x11(); par(mfrow = c(2, 2))
 plot(mod2)
 hist(resid(mod2))
 plot(fitted(mod2), resid(mod2))
+
+# method for a quadratic effect
+mod22 <- lm(SST_MEAN ~ poly(CENTRO_LON, 2, raw = T), data = iso)
+
+# Visual verification 
+x11(); par(mfrow = c(2, 2))
+plot(mod22)
+
+ND <- data.frame(CENTRO_LON = 38:120)
+prediction <- predict.lm(mod22,
+                         se.fit = T,
+                         newdata = ND)
+preddd <- data.frame(lon = ND$CENTRO_LON,
+                     fit_sst = prediction$fit,
+                     se_fit_sst = prediction$se.fit)
+preddd[preddd$fit_sst == max(preddd$fit_sst), ]
 
 
 mod22 <- lm(iso$SST_MEAN ~ poly(iso$CENTRO_LON, 2))
@@ -573,9 +589,9 @@ plot(sim)
 
 legend("bottomright",
        legend = c("n = 22",
-               expression(R^2 == 0.08686),
-               expression(F[20]^1 == 1.902),
-               "P = 0.183"),
+               expression(R^2 == 0.4039),
+               expression(F[19]^2 == 6.438),
+               "P = 0.007333"),
        bty = "n",
        cex = 1.5)
 # dev.off()
