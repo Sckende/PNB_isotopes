@@ -218,6 +218,9 @@ legend("bottomleft",
 #     unit = "cm",
 #     bg = "white")
 x11()
+col <- ifelse(month(iso$MIN_DATE_K50) < 4,
+              "red",
+              "black")
 plot(x = iso$CENTRO_LAT,
      y = iso$SST_MEAN,
      xlim = c(min(iso$CENTRO_LAT), max(iso$CENTRO_LAT)),
@@ -227,7 +230,8 @@ plot(x = iso$CENTRO_LAT,
      xlab = "Latitude of centroids (°)",
      cex.axis = 1.5,
      cex.lab = 1.5,
-     pch = 19)
+     pch = 19,
+    col = col)
 
 segments(x0 = iso$CENTRO_LAT,
          y0 = iso$SST_MEAN + iso$SST_SD,
@@ -521,7 +525,8 @@ plot(x = iso$CENTRO_LON,
      xlab = "Longitude of centroids (°)",
      cex.axis = 1.5,
      cex.lab = 1.5,
-     pch = 19)
+     pch = 19,
+    col = col)
 
 segments(x0 = iso$CENTRO_LON,
          y0 = iso$SST_MEAN + iso$SST_SD,
@@ -562,6 +567,7 @@ plot(fitted(mod2), resid(mod2))
 
 # method for a quadratic effect
 mod22 <- lm(SST_MEAN ~ poly(CENTRO_LON, 2, raw = T), data = iso)
+summary(mod22)
 
 # Visual verification 
 x11(); par(mfrow = c(2, 2))
